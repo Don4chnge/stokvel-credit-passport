@@ -11,8 +11,10 @@ test.describe("mobile layout", () => {
     await expect(page.locator("#security")).toBeInViewport();
     await expect(page.locator("#mobile-menu")).toHaveCount(0);
     await expectNoHorizontalScroll(page);
-    await page.goto("/legal");
-    await expectNoHorizontalScroll(page);
+    for (const path of ["/legal", "/privacy", "/terms", "/refunds", "/cookies"]) {
+      await page.goto(path);
+      await expectNoHorizontalScroll(page);
+    }
   });
 
   test("member portal fits a phone", async ({ page }) => {

@@ -38,7 +38,7 @@ function SignIn() {
         {error && <Notice tone="error">{error}</Notice>}
         <button className="btn-primary w-full py-3" disabled={busy}>{busy ? "Signing in" : "Sign in"}</button>
       </form>
-      <p className="mt-6 text-sm text-sage">New here? <Link href="/register" className="text-lime underline-offset-4 hover:underline">Create an account</Link></p>
+      <p className="mt-6 text-sm text-sage">New here? <Link href="/register" className="text-lime underline underline-offset-4">Create an account</Link></p>
     </main>
   );
 }

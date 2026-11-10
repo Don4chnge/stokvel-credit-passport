@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { SiteFooter, SiteNav } from "@/components/Shell";
+import { LegalBlock, LegalPage } from "@/components/LegalPage";
 
-export const metadata: Metadata = { title: "Legal and privacy" };
+export const metadata: Metadata = { title: "Regulatory status and licences" };
 
 const CHECKLIST = [
   "Obtain a legal opinion on whether sharing Passport reports with lenders makes the operator a credit bureau under the National Credit Act, and whether NCR registration is required.",
@@ -16,44 +16,47 @@ const CHECKLIST = [
   "Publish ledger checkpoints to an independent party.",
 ];
 
-function Block({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
-  return <section id={id} className="border-t border-line py-10"><h2 className="text-2xl">{title}</h2><div className="mt-4 max-w-prose space-y-3 leading-relaxed text-sage">{children}</div></section>;
-}
+const THIRD_PARTIES = [
+  ["PostHog", "Product analytics", "Optional. Loads only after you allow analytics, and only when a key is configured. Off in this build"],
+  ["Payment provider", "PayShap Request", "None connected. TEST MODE only"],
+  ["Hosting and database", "Running the service", "None yet. The prototype is not deployed"],
+];
+const LICENCES = [
+  ["Fraunces", "Headline typeface", "SIL Open Font License 1.1"],
+  ["Instrument Sans", "Interface typeface", "SIL Open Font License 1.1"],
+  ["IBM Plex Mono", "Hashes and identifiers", "SIL Open Font License 1.1"],
+  ["City skylines, logo, contribution ring", "Illustrations", "Original artwork made for this product. No stock photographs or third-party images are used"],
+  ["Next.js, React, Recharts, Motion, qrcode.react", "Frontend libraries", "MIT or ISC licences"],
+  ["FastAPI, SQLAlchemy, Pydantic, ReportLab", "Backend libraries", "MIT or BSD licences"],
+];
 
 export default function Legal() {
   return (
-    <>
-      <SiteNav />
-      <main id="main" className="mx-auto max-w-page px-5 py-16">
-        <h1 className="text-4xl">Legal and privacy</h1>
-        <p className="mt-4 max-w-prose rounded-md border border-copper/50 p-4 text-sm text-copper">Placeholder text for a prototype. Nothing here has had legal review. The product is designed with POPIA in mind and does not claim legal compliance.</p>
-        <div className="mt-10">
-          <Block id="privacy" title="Privacy policy (placeholder)">
-            <p>The platform collects your name, email, stokvel memberships and contribution records. It uses them to keep your contribution ledger, calculate your reliability index and produce your Passport.</p>
-            <p>The platform does not sell member data. It does not approve or decline credit. A lender sees your Passport only through a link you create.</p>
-            <p>Age band and gender, where a member provides them, are stored apart from scoring inputs and used only for fairness audits.</p>
-          </Block>
-          <Block id="consent" title="Consent">
-            <p>Sharing is opt-in, per lender and per link. You choose the fields, set an expiry of 1 to 90 days and revoke at any time. Every access attempt is logged and shown to you.</p>
-            <p>Product analytics is off unless you allow it. Analytics events carry no names, amounts, references or identity numbers.</p>
-          </Block>
-          <Block id="retention" title="Data retention policy (placeholder)">
-            <p>Account details are kept while your account is open. After a deletion request, personal details are removed following review.</p>
-            <p>Ledger entries are retained in pseudonymised form so the hash chain stays verifiable. Sharing links and access logs are kept for 24 months. Audit logs are kept for 5 years.</p>
-            <p>These periods are proposals for the pilot and need legal confirmation.</p>
-          </Block>
-          <Block id="access" title="Access, correction and deletion">
-            <p>Download everything held about you from Account and privacy. Report an incorrect contribution record from your Contributions page. Request account deletion from Account and privacy.</p>
-          </Block>
-          <Block id="regulatory" title="Regulatory status">
-            <p>This is a prototype. The operator is not a registered credit bureau, credit provider or financial services provider. Payments run in TEST MODE and no money moves.</p>
-            <p>Calling the product a member-owned Passport does not remove regulatory duties. The National Credit Act and its rules on credit bureaux and credit information must be reviewed before any commercial use.</p>
-            <p className="text-ivory">Legal review checklist before any live lender integration:</p>
-            <ol className="list-decimal space-y-2 pl-5">{CHECKLIST.map((c) => <li key={c}>{c}</li>)}</ol>
-          </Block>
-        </div>
-      </main>
-      <SiteFooter />
-    </>
+    <LegalPage title="Regulatory status and licences" current="/legal" lead="Where this prototype stands with regulators, which outside services it uses, and the licences of everything it ships.">
+      <LegalBlock id="regulatory" title="1. Regulatory status">
+        <p>The operator is not a registered credit bureau, credit provider or financial services provider. Payments run in TEST MODE and no money moves.</p>
+        <p>Calling the product a member-owned Passport does not remove regulatory duties. The National Credit Act and its rules on credit bureaux and credit information must be reviewed before any commercial use.</p>
+        <p><strong>Legal review checklist before any live lender integration:</strong></p>
+        <ol className="list-decimal space-y-2 pl-5" data-testid="legal-checklist">{CHECKLIST.map((c) => <li key={c} className="!ml-0 !list-decimal">{c}</li>)}</ol>
+      </LegalBlock>
+      <LegalBlock id="claims" title="2. What we do not claim">
+        <ul><li>No partnerships, endorsements, customers or pilot results. None exist yet.</li><li>No reviews or testimonials. None are shown anywhere on this site.</li>
+          <li>Every name, figure and organisation in the product is synthetic and labelled.</li><li>The index has not been validated against loan repayment.</li></ul>
+      </LegalBlock>
+      <LegalBlock id="third-parties" title="3. Third-party services">
+        <div className="overflow-x-auto rounded-lg border border-line"><table className="w-full min-w-[560px] text-sm" data-testid="third-party-table">
+          <thead className="border-b border-line"><tr><th className="th">Service</th><th className="th">Purpose</th><th className="th">Status</th></tr></thead>
+          <tbody className="divide-y divide-line">{THIRD_PARTIES.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i} className={`td ${i === 0 ? "text-ivory" : ""}`}>{c}</td>)}</tr>)}</tbody></table></div>
+        <p>A first visit to this site makes no request to any other domain.</p>
+      </LegalBlock>
+      <LegalBlock id="licences" title="4. Fonts, images and software licences">
+        <div className="overflow-x-auto rounded-lg border border-line"><table className="w-full min-w-[560px] text-sm" data-testid="licence-table">
+          <thead className="border-b border-line"><tr><th className="th">Item</th><th className="th">Use</th><th className="th">Licence</th></tr></thead>
+          <tbody className="divide-y divide-line">{LICENCES.map((r) => <tr key={r[0]}>{r.map((c, i) => <td key={i} className={`td ${i === 0 ? "text-ivory" : ""}`}>{c}</td>)}</tr>)}</tbody></table></div>
+      </LegalBlock>
+      <LegalBlock id="accessibility" title="5. Accessibility">
+        <p>The site is built to work with a keyboard and a screen reader, with text alternatives for images and charts and colour contrast checked against WCAG 2.1 level AA. Moving artwork has a pause control and stops for visitors who prefer reduced motion. Report a barrier to the contact address below.</p>
+      </LegalBlock>
+    </LegalPage>
   );
 }

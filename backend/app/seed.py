@@ -87,7 +87,8 @@ def seed(db, today: date | None = None, rng_seed: int = 2026) -> dict:
     used_ids, used_names = set(), set()
 
     def member(email: str, name: str, password_hash: str, archetype: str | None) -> User:
-        u = User(email=email, full_name=name, password_hash=password_hash, role="member", is_synthetic=True)
+        u = User(email=email, full_name=name, password_hash=password_hash, role="member", is_synthetic=True,
+                 terms_accepted_at=now, terms_version="synthetic", age_confirmed=True)
         db.add(u)
         db.flush()
         pid = new_passport_id()

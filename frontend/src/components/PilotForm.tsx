@@ -35,7 +35,7 @@ export function PilotForm() {
         <textarea id="pf-msg" name="message" rows={3} maxLength={1000} className="field" /></div>
       <label className="flex items-start gap-3 text-sm text-sage sm:col-span-2">
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[#C6E66B]" />
-        <span>I agree to be contacted about the pilot. My details are used for this purpose only.</span>
+        <span>I agree to be contacted about the pilot. My details are used for this purpose only, and every message will carry an unsubscribe link.</span>
       </label>
       {error && <div className="sm:col-span-2"><Notice tone="error">{error}</Notice></div>}
       <div className="sm:col-span-2"><button className="btn-primary" disabled={state === "sending"}>{state === "sending" ? "Registering" : "Register for the pilot"}</button></div>

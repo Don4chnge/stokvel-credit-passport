@@ -8,10 +8,16 @@ import { useEffect, useMemo, useState } from "react";
  * for visitors who prefer reduced motion or press pause.
  */
 export const CITIES = [
-  { key: "jhb", name: "Johannesburg", region: "Gauteng", note: "Hillbrow Tower, Ponte City and the Nelson Mandela Bridge" },
   { key: "cpt", name: "Cape Town", region: "Western Cape", note: "Table Mountain, Lion's Head and the harbour" },
-  { key: "pta", name: "Pretoria", region: "Gauteng", note: "The Union Buildings among the jacarandas" },
+  { key: "gq", name: "Gqeberha", region: "Eastern Cape", note: "The Campanile, the Donkin lighthouse and the bay" },
+  { key: "kim", name: "Kimberley", region: "Northern Cape", note: "The Big Hole under a Karoo sky" },
+  { key: "bfn", name: "Bloemfontein", region: "Free State", note: "Naval Hill above the Fourth Raadsaal" },
+  { key: "dbn", name: "Durban", region: "KwaZulu-Natal", note: "The stadium arch over the beachfront" },
   { key: "nw", name: "Rustenburg", region: "North West", note: "Platinum headgear under the Magaliesberg" },
+  { key: "plk", name: "Polokwane", region: "Limpopo", note: "Baobabs and the Peter Mokaba Stadium" },
+  { key: "mbo", name: "Mbombela", region: "Mpumalanga", note: "The stadium's giraffe pylons among granite domes" },
+  { key: "jhb", name: "Johannesburg", region: "Gauteng", note: "Hillbrow Tower, Ponte City and the Nelson Mandela Bridge" },
+  { key: "pta", name: "Pretoria", region: "Gauteng", note: "The Union Buildings among the jacarandas" },
 ] as const;
 export type CityKey = (typeof CITIES)[number]["key"];
 
@@ -310,7 +316,219 @@ function NorthWest() {
   );
 }
 
-const SCENE: Record<CityKey, () => React.JSX.Element> = { jhb: Johannesburg, cpt: CapeTown, pta: Pretoria, nw: NorthWest };
+// ------------------------------------------------------------------ shared pieces for the coastal and inland scenes
+function Water({ boat = true }: { boat?: boolean }) {
+  return (
+    <g>
+      <rect x="0" y={G} width={W} height="90" fill="#0E1A18" />
+      <line x1="0" x2={W} y1={G + 0.5} y2={G + 0.5} stroke="#2B3D36" />
+      {Array.from({ length: 34 }).map((_, i) => (
+        <rect key={i} className="ripple" x={(i * 173) % W} y={G + 8 + ((i * 29) % 62)} width={26 + ((i * 13) % 50)} height="1.2" fill={i % 4 ? SAGE : LIME} opacity="0.3"
+          style={{ animationDelay: `${(i % 7) * 0.6}s` }} />))}
+      {boat && <g className="drive-r" style={{ animationDuration: "50s" }}>
+        <path d={`M0,${G + 30} l46,0 l-7,9 l-32,0 Z`} fill={NEAR} /><rect x="14" y={G + 20} width="16" height="10" fill={NEAR} /><circle cx="22" cy={G + 24} r="1.6" fill={LIME} /></g>}
+    </g>
+  );
+}
+function Palm({ x, s = 1 }: { x: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${G}) scale(${s})`} stroke={NEAR} fill="none" strokeLinecap="round">
+      <path d="M0,0 Q8,-50 2,-100" strokeWidth="5" />
+      {[-70, -40, -12, 14, 42, 72].map((a) => <path key={a} d="M2,-100 q22,-18 46,2" strokeWidth="4" transform={`rotate(${a - 90} 2 -100)`} />)}
+    </g>
+  );
+}
+function Turbine({ x, h }: { x: number; h: number }) {
+  return (
+    <g transform={`translate(${x} ${G - h})`}>
+      <path d={`M-2.5,${h} L-1,0 L1,0 L2.5,${h} Z`} fill={SAGE} opacity="0.55" />
+      <g className="wheel fast" style={{ animationDuration: "9s" }}>{[0, 120, 240].map((a) => <path key={a} d="M0,0 L-2.4,-44 L2.4,-44 Z" fill={SAGE} opacity="0.7" transform={`rotate(${a})`} />)}</g>
+    </g>
+  );
+}
+function Tree({ x, s = 1 }: { x: number; s?: number }) {
+  return <g transform={`translate(${x} ${G}) scale(${s})`} fill={NEAR}><rect x="-2.5" y="-34" width="5" height="34" /><circle cy="-52" r="26" /><circle cx="-20" cy="-40" r="17" /><circle cx="20" cy="-40" r="17" /></g>;
+}
+function Headgear({ x, scale = 1 }: { x: number; scale?: number }) {
+  return (
+    <g transform={`translate(${x} ${G}) scale(${scale}) translate(-274 ${-G})`}>
+      <g stroke={NEAR} strokeWidth="5" fill="none">
+        <path d={`M246,${G} L258,${G - 228} L290,${G - 228} L302,${G}`} /><line x1="274" y1={G - 228} x2="118" y2={G} />
+        {[0, 1, 2, 3, 4].map((i) => <path key={i} strokeWidth="2" d={`M${250 + i * 0.6},${G - 40 - i * 40} L${298 - i * 0.6},${G - 80 - i * 40} M${298 - i * 0.6},${G - 40 - i * 40} L${250 + i * 0.6},${G - 80 - i * 40}`} />)}
+      </g>
+      <rect x="244" y={G - 250} width="60" height="24" fill={NEAR} /><Sheave cx={260} cy={G - 258} /><Sheave cx={290} cy={G - 258} />
+      <circle className="beacon" cx="274" cy={G - 282} r="2.6" fill={COPPER} />
+    </g>
+  );
+}
+
+// ------------------------------------------------------------------ Gqeberha
+function Gqeberha() {
+  const town = useMemo(() => blocks(151, 300, W + 40, 40, 150, MID, 0.2), []);
+  const front = useMemo(() => blocks(163, 980, 1500, 50, 170, NEAR, 0.3), []);
+  return (
+    <>
+      <path d={`M-40,${G} L-40,520 C200,500 420,530 700,512 C980,496 1240,520 1640,500 L1640,${G} Z`} fill={FAR} />
+      {[430, 520, 610, 700].map((x, i) => <Turbine key={x} x={x} h={150 + (i % 2) * 26} />)}
+      <g className="drift-mid"><Row items={town} seed={2100} /></g>
+      {/* Donkin Reserve: the stone pyramid and the lighthouse */}
+      <path d={`M1180,${G} L1180,474 Q1320,440 1470,476 L1470,${G} Z`} fill="#2A4A3D" />
+      <polygon points="1236,470 1276,404 1316,466" fill="#3A6352" />
+      <g fill={IVORY} opacity="0.85"><path d="M1352,462 L1358,372 L1374,372 L1380,462 Z" /><rect x="1353" y="362" width="26" height="6" /><rect x="1358" y="344" width="16" height="18" fill={NEAR} /></g>
+      <circle className="beacon" cx="1366" cy="353" r="5" fill={LIME} />
+      <rect x="1424" y="330" width="1.6" height="140" fill={SAGE} opacity="0.6" />
+      {/* the Campanile */}
+      <g fill={NEAR}><rect x="884" y={G - 318} width="34" height="420" /><path d={`M880,${G - 318} L901,${G - 372} L922,${G - 318} Z`} /><rect x="899.8" y={G - 396} width="2.4" height="26" /></g>
+      <path d={`M892,${G - 286} v-18 a9,9 0 0 1 18,0 v18 Z`} fill={LIME} opacity="0.75" className="win" />
+      <Row items={[{ x: 886, w: 30, h: 250, fill: "none", lit: 0.35 }]} seed={2201} />
+      <g className="drift-near"><Row items={front} seed={2300} /></g>
+      <g fill="none" stroke={NEAR} strokeWidth="5"><path d={`M1500,${G} L1512,${G - 120} L1524,${G}`} /><line x1="1466" y1={G - 120} x2="1570" y2={G - 120} /></g>
+      <Water />
+    </>
+  );
+}
+
+// ------------------------------------------------------------------ Kimberley
+function Kimberley() {
+  const town = useMemo(() => blocks(171, 250, 720, 26, 96, NEAR, 0.3), []);
+  const east = useMemo(() => blocks(177, 1440, W + 40, 26, 80, NEAR, 0.3), []);
+  return (
+    <>
+      <Stars seed={99} /><Stars seed={123} />
+      {/* flat-topped Karoo koppies */}
+      <path d={`M-40,${G} L-40,500 L120,500 L170,446 L360,446 L410,500 L700,506 L760,470 L980,470 L1040,506 L1300,500 L1350,452 L1520,452 L1570,500 L1640,500 L1640,${G} Z`} fill={FAR} />
+      <path d={`M-40,${G} L-40,548 Q800,526 1640,548 L1640,${G} Z`} fill={MID} />
+      {/* the Big Hole */}
+      <ellipse cx="1130" cy="596" rx="270" ry="44" fill={NEAR} stroke={SAGE} strokeOpacity="0.45" strokeWidth="1.5" />
+      <ellipse cx="1130" cy="606" rx="200" ry="26" fill="#17392F" />
+      {Array.from({ length: 9 }).map((_, i) => <rect key={i} className="ripple" x={990 + i * 30} y={598 + (i % 3) * 7} width="34" height="1.2" fill={LIME} opacity="0.35" style={{ animationDelay: `${i * 0.5}s` }} />)}
+      <g stroke={SAGE} strokeOpacity="0.7" strokeWidth="2" fill="none"><path d="M846,566 L980,566 M980,566 L980,578 M860,566 L846,596 M900,566 L900,590" /></g>
+      <Headgear x={800} scale={0.72} />
+      {/* Honoured Dead Memorial */}
+      <g fill="#2A4A3D"><rect x="1402" y="470" width="96" height="14" /><rect x="1412" y="386" width="76" height="14" /><rect x="1422" y="364" width="56" height="22" />
+        {[0, 1, 2, 3, 4].map((i) => <rect key={i} x={1416 + i * 15.5} y="400" width="7" height="70" />)}</g>
+      <g className="drift-near"><Row items={town} seed={2500} /><Row items={east} seed={2600} /></g>
+      <Thorn x={640} s={0.9} /><Thorn x={1330} s={0.7} />
+      <g className="drive-r" style={{ animationDuration: "40s" }}><rect x="0" y={G - 22} width="46" height="20" rx="3" fill={NEAR} />
+        {[0, 1, 2, 3].map((i) => <rect key={i} x={5 + i * 10} y={G - 18} width="6" height="7" fill={LIME} opacity="0.8" />)}<line x1="23" y1={G - 22} x2="23" y2={G - 40} stroke={NEAR} strokeWidth="1.5" /></g>
+      <Traffic />
+    </>
+  );
+}
+
+// ------------------------------------------------------------------ Bloemfontein
+function Bloemfontein() {
+  const west = useMemo(() => blocks(181, 280, 840, 40, 170, MID, 0.2), []);
+  const east = useMemo(() => blocks(187, 1090, W + 40, 40, 150, NEAR, 0.28), []);
+  const roses = useMemo(() => { const r = rng(77); return Array.from({ length: 46 }).map(() => ({ x: 820 + r() * 700, y: G - 6 - r() * 22, s: 2.2 + r() * 2.2 })); }, []);
+  return (
+    <>
+      {/* Naval Hill, with the statue and the planetarium dome on top */}
+      <path d={`M-40,${G} L-40,530 C300,520 520,524 700,500 L800,410 L1440,402 L1540,500 L1640,512 L1640,${G} Z`} fill={FAR} stroke={SAGE} strokeOpacity="0.3" />
+      <g fill="#3A6352"><path d="M1150,402 a34,34 0 0 1 68,0 Z" /><rect x="1142" y="398" width="84" height="6" /></g>
+      <g fill={NEAR}><rect x="1004" y="376" width="20" height="28" /><rect x="1009" y="338" width="10" height="38" rx="3" /><circle cx="1014" cy="331" r="5.5" /><path d="M1018,346 L1034,322 L1037,325 L1021,352 Z" /></g>
+      <g className="drift-mid"><Row items={west} seed={2700} /></g>
+      {/* Fourth Raadsaal */}
+      <g fill="#2A4A3D">
+        <rect x="868" y={G - 92} width="196" height="190" /><rect x="930" y={G - 124} width="72" height="34" />
+        <path d={`M940,${G - 124} a26,30 0 0 1 52,0 Z`} /><rect x="964.6" y={G - 176} width="2.8" height="24" />
+        <path d={`M906,${G - 92} L966,${G - 118} L1026,${G - 92} Z`} fill="#3A6352" />
+      </g>
+      <g stroke={LIME} strokeOpacity="0.7" strokeWidth="2">{Array.from({ length: 12 }).map((_, i) => <line key={i} className="win" x1={880 + i * 15.6} y1={G - 80} x2={880 + i * 15.6} y2={G - 20} style={{ animationDelay: `${(i % 5) * 0.9}s` }} />)}</g>
+      <g className="drift-near"><Row items={east} seed={2800} /></g>
+      <Tree x={760} s={0.9} /><Tree x={1560} />
+      <Traffic />
+      {/* the City of Roses */}
+      {roses.map((r, i) => <g key={i}><line x1={r.x} y1={G} x2={r.x} y2={r.y} stroke="#1F3A31" /><circle cx={r.x} cy={r.y} r={r.s} fill={i % 3 ? "#C98F86" : COPPER} opacity="0.9" /></g>)}
+    </>
+  );
+}
+
+// ------------------------------------------------------------------ Durban
+function Durban() {
+  const reduce = useReducedMotion();
+  const west = useMemo(() => blocks(191, 380, 830, 50, 170, MID, 0.2), []);
+  const hotels = useMemo(() => blocks(197, 1200, 1520, 150, 300, NEAR, 0.34).map((b) => ({ ...b, w: Math.max(b.w, 44), roof: "flat" as const })), []);
+  const arch = `M852,${G - 20} Q1006,${G - 520} 1160,${G - 20}`;
+  return (
+    <>
+      <path d={`M-40,${G} L-40,540 C300,520 700,548 1100,530 C1300,522 1500,540 1640,532 L1640,${G} Z`} fill={FAR} />
+      {[70, 190].map((x) => <g key={x} fill={FAR} opacity="0.9"><path d={`M${x},${G - 6} l90,0 l-12,-12 l-70,0 Z`} /><rect x={x + 54} y={G - 34} width="16" height="16" /></g>)}
+      <g className="drift-mid"><Row items={west} seed={2900} /></g>
+      {/* Moses Mabhida Stadium: the bowl and the arch that splits in two */}
+      <path d={`M846,${G} L858,${G - 84} Q1006,${G - 122} 1154,${G - 84} L1166,${G} Z`} fill="#2A4A3D" />
+      <g stroke={LIME} strokeOpacity="0.55" strokeWidth="1.6">{Array.from({ length: 19 }).map((_, i) => <line key={i} className="win" x1={868 + i * 15.4} y1={G - 70 - Math.sin((i / 18) * Math.PI) * 22} x2={868 + i * 15.4} y2={G - 8} style={{ animationDelay: `${(i % 6) * 0.7}s` }} />)}</g>
+      <path d={arch} fill="none" stroke={IVORY} strokeOpacity="0.85" strokeWidth="6" strokeLinecap="round" />
+      <path d={`M1006,${G - 270} Q1110,${G - 250} 1196,${G - 20}`} fill="none" stroke={IVORY} strokeOpacity="0.6" strokeWidth="4" strokeLinecap="round" />
+      {!reduce && <circle r="5" fill={LIME}><animateMotion dur="16s" repeatCount="indefinite" path={arch} keyPoints="0;0.5;0" keyTimes="0;0.5;1" calcMode="linear" /></circle>}
+      <g className="drift-near"><Row items={hotels} seed={3000} /></g>
+      {[790, 1182, 1340, 1470, 1570].map((x, i) => <Palm key={x} x={x} s={0.9 + (i % 2) * 0.25} />)}
+      <rect x="560" y={G - 4} width="230" height="5" fill={NEAR} />{[580, 640, 700, 760].map((x) => <rect key={x} x={x} y={G} width="4" height="26" fill={NEAR} />)}
+      <Water />
+    </>
+  );
+}
+
+// ------------------------------------------------------------------ Polokwane
+function Baobab({ x, s = 1 }: { x: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${G}) scale(${s})`} fill={NEAR} stroke={NEAR} strokeLinecap="round">
+      <path d="M-34,0 Q-26,-70 -22,-118 L22,-118 Q26,-70 34,0 Z" />
+      {[[-18, -116, -64, -168], [-8, -118, -30, -190], [4, -118, 12, -196], [14, -118, 52, -176], [20, -112, 82, -140], [-20, -110, -88, -134]].map(([x1, y1, x2, y2], i) => (
+        <g key={i} fill="none"><path d={`M${x1},${y1} L${x2},${y2}`} strokeWidth="9" /><path d={`M${x2},${y2} l${(x2 - x1) * 0.3},-14 M${x2},${y2} l${(x2 - x1) * 0.45},6 M${x2},${y2} l-6,-20`} strokeWidth="3" /></g>))}
+    </g>
+  );
+}
+function Polokwane() {
+  const town = useMemo(() => blocks(211, 280, 930, 26, 110, NEAR, 0.3), []);
+  return (
+    <>
+      <circle cx="900" cy="440" r="210" fill="url(#sun)" /><circle cx="900" cy="440" r="48" fill="#D9A56E" />
+      <path d={`M-40,${G} L-40,470 L160,430 L330,474 L520,440 L700,480 L860,452 L1040,486 L1260,444 L1440,480 L1640,450 L1640,${G} Z`} fill="#2A4A3D" />
+      <path d={`M-40,${G} L-40,548 Q800,520 1640,552 L1640,${G} Z`} fill={MID} />
+      {/* Peter Mokaba Stadium: four corner towers shaped like baobab trunks */}
+      <g fill={NEAR}>
+        <rect x="1010" y={G - 86} width="250" height="180" /><rect x="996" y={G - 100} width="278" height="14" />
+        {[1000, 1088, 1176, 1264].map((x) => <g key={x}><path d={`M${x - 15},${G} L${x - 9},${G - 150} L${x + 9},${G - 150} L${x + 15},${G} Z`} />
+          <path d={`M${x},${G - 150} l-20,-24 M${x},${G - 150} l0,-30 M${x},${G - 150} l20,-24`} stroke={NEAR} strokeWidth="5" fill="none" strokeLinecap="round" /></g>)}
+      </g>
+      <Row items={[{ x: 1016, w: 238, h: 78, fill: "none", lit: 0.5 }]} seed={3101} />
+      {[1000, 1088, 1176, 1264].map((x, i) => <circle key={x} className="beacon" cx={x} cy={G - 182} r="2.6" fill={IVORY} style={{ animationDelay: `${i * 0.5}s` }} />)}
+      <g className="drift-near"><Row items={town} seed={3200} /></g>
+      <Baobab x={1430} s={1.15} /><Baobab x={780} s={0.7} /><Thorn x={1560} s={0.7} /><Thorn x={600} s={0.8} />
+      <Traffic />
+    </>
+  );
+}
+
+// ------------------------------------------------------------------ Mbombela
+function Mbombela() {
+  const town = useMemo(() => blocks(221, 300, 840, 30, 120, NEAR, 0.3), []);
+  const east = useMemo(() => blocks(227, 1330, W + 40, 30, 110, NEAR, 0.3), []);
+  return (
+    <>
+      {/* Lowveld granite domes */}
+      <path d={`M-40,${G} L-40,470 Q120,360 300,452 Q420,330 640,440 Q800,380 940,452 Q1120,300 1330,440 Q1470,380 1640,460 L1640,${G} Z`} fill="#2A4A3D" stroke={SAGE} strokeOpacity="0.25" />
+      <path d={`M-40,${G} L-40,530 Q200,480 460,524 Q760,470 1040,520 Q1300,476 1640,524 L1640,${G} Z`} fill={FAR} />
+      {/* Mbombela Stadium and its giraffe pylons */}
+      <path d={`M880,${G} L892,${G - 78} L1268,${G - 78} L1280,${G} Z`} fill={NEAR} />
+      <rect x="868" y={G - 116} width="424" height="8" fill="#3A6352" />
+      <Row items={[{ x: 896, w: 368, h: 70, fill: "none", lit: 0.45 }]} seed={3301} />
+      <g stroke={COPPER} strokeWidth="6" fill="none" strokeLinecap="round">
+        {Array.from({ length: 9 }).map((_, i) => { const x = 896 + i * 46; return (
+          <g key={i}><path d={`M${x},${G - 60} L${x + 10},${G - 150}`} /><path d={`M${x + 10},${G - 150} l14,-6`} strokeWidth="5" />
+            <path d={`M${x + 9},${G - 152} l-2,-9 M${x + 14},${G - 154} l0,-9`} strokeWidth="2" /></g>); })}
+      </g>
+      <g className="drift-near"><Row items={town} seed={3400} /><Row items={east} seed={3500} /></g>
+      {[560, 700, 850, 1310, 1420, 1540].map((x, i) => <Tree key={x} x={x} s={0.8 + (i % 3) * 0.2} />)}
+      <Traffic />
+    </>
+  );
+}
+
+const SCENE: Record<CityKey, () => React.JSX.Element> = {
+  cpt: CapeTown, gq: Gqeberha, kim: Kimberley, bfn: Bloemfontein, dbn: Durban, nw: NorthWest, plk: Polokwane, mbo: Mbombela, jhb: Johannesburg, pta: Pretoria,
+};
 
 export function CityScene({ city }: { city: CityKey }) {
   const Scene = SCENE[city];
@@ -326,26 +544,30 @@ export function CityScene({ city }: { city: CityKey }) {
       </defs>
       <rect width={W} height="720" fill="url(#sky)" />
       <rect y="240" width={W} height="400" fill="url(#glow)" />
-      <Stars seed={city.charCodeAt(0) * 7} />
+      <Stars seed={city.charCodeAt(0) * 7 + city.charCodeAt(1)} />
       <Scene />
     </svg>
   );
 }
 
+export const SCENE_SECONDS = 7;
+
+/** The skyline changes by itself. There is no city picker. A pause control stays for people who need stillness. */
 export function CityScenes() {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const city = CITIES[index];
+  const still = paused || Boolean(reduce);
 
   useEffect(() => {
-    if (reduce || paused) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % CITIES.length), 9000);
+    if (still) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % CITIES.length), SCENE_SECONDS * 1000);
     return () => clearInterval(id);
-  }, [reduce, paused]);
+  }, [still]);
 
   return (
-    <div className={`city-scenes absolute inset-0 ${paused || reduce ? "is-paused" : ""}`} data-testid="city-scenes" data-city={city.key}>
+    <div className={`city-scenes absolute inset-0 ${still ? "is-paused" : ""}`} data-testid="city-scenes" data-city={city.key}>
       <AnimatePresence initial={false}>
         <motion.div key={city.key} className="absolute inset-x-0 bottom-0 h-[58%] lg:h-full" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 1.6, ease: "easeOut" }}>
@@ -355,24 +577,22 @@ export function CityScenes() {
       {/* keeps the headline readable over the artwork */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-forest via-forest/70 to-transparent lg:bg-gradient-to-r lg:from-forest/90 lg:via-forest/35 lg:to-transparent" aria-hidden />
 
-      <div className="absolute inset-x-0 bottom-0 z-20 border-t border-line/70 bg-forest/75 backdrop-blur">
-        <div className="mx-auto flex max-w-page flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-3">
-          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Choose a city">
-            {CITIES.map((c, i) => (
-              <button key={c.key} type="button" aria-pressed={i === index} onClick={() => { setIndex(i); setPaused(true); }}
-                className={`relative rounded-md px-3 py-1.5 text-sm transition-colors ${i === index ? "text-ivory" : "text-sage hover:text-ivory"}`}>
-                {c.name}
-                {i === index && <motion.span layoutId="city-underline" className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded bg-lime" />}
-              </button>
-            ))}
-            <button type="button" onClick={() => setPaused((p) => !p)} className="ml-2 rounded-md border border-line px-2.5 py-1 text-xs text-sage hover:text-ivory"
+      <div className="absolute inset-x-0 bottom-0 z-20 border-t border-line/70 bg-forest/80 backdrop-blur">
+        <div className="mx-auto flex max-w-page items-center justify-between gap-4 px-5 py-3">
+          <p className="min-w-0 truncate text-sm text-sage" data-testid="city-caption">
+            <span className="font-serif text-lg text-ivory">{city.name}</span>, {city.region}
+            <span className="hidden lg:inline">. {city.note}. Each lit window is a household saving.</span>
+          </p>
+          <div className="flex flex-none items-center gap-4">
+            <div className="hidden items-center gap-1 sm:flex" aria-hidden data-testid="city-progress">
+              {CITIES.map((c, i) => <span key={c.key} className={`h-0.5 rounded transition-all duration-500 ${i === index ? "w-6 bg-lime" : "w-2 bg-sage/40"}`} />)}
+            </div>
+            <button type="button" onClick={() => setPaused((p) => !p)} className="rounded-md border border-line px-2.5 py-1 text-xs text-sage hover:text-ivory"
               aria-label={paused ? "Play the skyline animation" : "Pause the skyline animation"}>{paused ? "Play" : "Pause"}</button>
           </div>
-          <p className="truncate text-xs text-sage" aria-live="polite" data-testid="city-caption">
-            <span className="text-ivory">{city.name}, {city.region}.</span> <span className="hidden xl:inline">{city.note}. Each lit window is a household saving.</span>
-          </p>
         </div>
       </div>
+      <p className="sr-only" aria-live="polite">Background artwork: the skyline of {city.name}, {city.region}.</p>
     </div>
   );
 }

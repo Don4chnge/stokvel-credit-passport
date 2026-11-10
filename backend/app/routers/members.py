@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from .. import services
 from ..db import get_db
-from ..deps import client_ip, parse_uuid, require_admin, require_lender, require_member, serialize_user
+from ..deps import client_ip, get_current_user, parse_uuid, require_admin, require_lender, require_member, serialize_user
 from ..models import (
     AuditLog, Contribution, ContributionSchedule, LenderAccount, PassportAccessLog, PassportConsent,
     PassportReport, StokvelMembership, User, utcnow,
@@ -93,12 +93,31 @@ def export_my_data(user: User = Depends(require_member), db: Session = Depends(g
 
 
 @router.post("/members/me/deletion-request", status_code=202)
-def request_deletion(user: User = Depends(require_member), db: Session = Depends(get_db)):
-    user.deletion_requested_at = utcnow()
-    services.audit(db, user, "member.deletion_requested", "user", user.id)
-    db.commit()
-    return {"status": "received",
+def request_deletion(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Open to members and lenders. Platform staff handle the request within 30 days."""
+    if not user.deletion_requested_at:
+        user.deletion_requested_at = utcnow()
+        services.audit(db, user, "member.deletion_requested", "user", user.id)
+        db.commit()
+    return {"status": "received", "requested_at": user.deletion_requested_at.isoformat(),
             "detail": "Your request is recorded. Ledger entries are retained in pseudonymised form. See the data retention policy."}
+
+
+@router.delete("/members/me/deletion-request")
+def cancel_deletion(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if user.deletion_requested_at:
+        user.deletion_requested_at = None
+        services.audit(db, user, "member.deletion_cancelled", "user", user.id)
+        db.commit()
+    return {"status": "cancelled"}
+
+
+@router.get("/admin/deletion-requests")
+def deletion_requests(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    rows = db.execute(select(User).where(User.deletion_requested_at.is_not(None))
+                      .order_by(User.deletion_requested_at)).scalars().all()
+    return [{"user_id": str(u.id), "role": u.role, "requested_at": u.deletion_requested_at.isoformat(),
+             "is_synthetic": u.is_synthetic} for u in rows]
 
 
 # ------------------------------------------------------------------ passport

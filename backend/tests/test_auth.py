@@ -3,7 +3,7 @@ from tests.conftest import PASSWORD
 
 def test_register_creates_member_with_passport_id(client):
     r = client.post("/api/v1/auth/register", json={"email": "New.Member@Example.test", "password": PASSWORD,
-                                                   "full_name": "New Member"})
+                                                   "full_name": "New Member", "accept_terms": True, "confirm_adult": True})
     assert r.status_code == 201
     user = r.json()["user"]
     assert user["email"] == "new.member@example.test" and user["role"] == "member"
@@ -13,13 +13,13 @@ def test_register_creates_member_with_passport_id(client):
 
 def test_password_is_hashed_with_bcrypt(client, db):
     from app.models import User
-    client.post("/api/v1/auth/register", json={"email": "h@example.test", "password": PASSWORD, "full_name": "Hash Test"})
+    client.post("/api/v1/auth/register", json={"email": "h@example.test", "password": PASSWORD, "full_name": "Hash Test", "accept_terms": True, "confirm_adult": True})
     u = db.query(User).filter_by(email="h@example.test").one()
     assert u.password_hash.startswith("$2") and PASSWORD not in u.password_hash
 
 
 def test_duplicate_email_is_rejected(client):
-    body = {"email": "dup@example.test", "password": PASSWORD, "full_name": "Dup One"}
+    body = {"email": "dup@example.test", "password": PASSWORD, "full_name": "Dup One", "accept_terms": True, "confirm_adult": True}
     assert client.post("/api/v1/auth/register", json=body).status_code == 201
     assert client.post("/api/v1/auth/register", json=body).status_code == 409
 
@@ -104,3 +104,48 @@ def test_pilot_interest_needs_consent(client, db):
     assert client.post("/api/v1/pilot-interest", json=body).status_code == 422
     assert client.post("/api/v1/pilot-interest", json={**body, "consent_to_contact": True}).status_code == 201
     assert db.query(PilotInterest).count() == 1
+
+
+def test_registration_needs_terms_and_age_confirmation(client, db):
+    from app.models import User
+    base = {"email": "consent@example.test", "password": PASSWORD, "full_name": "Consent Test"}
+    r = client.post("/api/v1/auth/register", json=base)
+    assert r.status_code == 422
+    r = client.post("/api/v1/auth/register", json={**base, "accept_terms": True, "confirm_adult": False})
+    assert r.status_code == 422 and "18 or older" in r.text
+    r = client.post("/api/v1/auth/register", json={**base, "accept_terms": False, "confirm_adult": True})
+    assert r.status_code == 422 and "terms of service" in r.text
+    assert client.post("/api/v1/auth/register", json={**base, "accept_terms": True, "confirm_adult": True}).status_code == 201
+    u = db.query(User).filter_by(email="consent@example.test").one()
+    assert u.terms_accepted_at is not None and u.terms_version == "2026-11-draft" and u.age_confirmed is True
+
+
+def test_pilot_contact_unsubscribes_in_one_step(client, db):
+    from app.models import PilotInterest
+    client.post("/api/v1/pilot-interest", json={"contact_name": "Zodwa M", "email": "z@example.test", "organisation": "Test Stokvel",
+                                                "kind": "stokvel", "consent_to_contact": True})
+    row = db.query(PilotInterest).one()
+    assert len(row.unsubscribe_token) >= 40 and row.unsubscribed_at is None
+    assert client.post(f"/api/v1/pilot-interest/unsubscribe/{row.unsubscribe_token}").json() == {"status": "unsubscribed"}
+    db.refresh(row)
+    assert row.unsubscribed_at is not None and row.consent_to_contact is False
+    assert client.post("/api/v1/pilot-interest/unsubscribe/unknown-token").json() == {"status": "unsubscribed"}
+
+
+def test_deletion_request_lifecycle(client, make_user):
+    member, lender = make_user("Del Member"), make_user("Del Lender", "lender")
+    admin_only = member.get("/api/v1/admin/deletion-requests")
+    assert admin_only.status_code == 403
+    for actor in (member, lender):
+        r = actor.post("/api/v1/members/me/deletion-request")
+        assert r.status_code == 202 and r.json()["requested_at"]
+        assert actor.get("/api/v1/auth/me").json()["deletion_requested_at"]
+    assert member.delete("/api/v1/members/me/deletion-request").json() == {"status": "cancelled"}
+    assert member.get("/api/v1/auth/me").json()["deletion_requested_at"] is None
+
+
+def test_no_unneeded_personal_fields_are_stored():
+    """Data minimisation: no phone, identity number, address or date of birth columns exist."""
+    from app.db import Base
+    columns = {c.name for t in Base.metadata.tables.values() for c in t.columns}
+    assert not columns & {"phone", "id_number", "identity_number", "address", "date_of_birth", "bank_account", "account_number"}

@@ -6,9 +6,9 @@ from .. import services
 from ..config import get_settings
 from ..db import get_db
 from ..deps import client_ip, get_current_user, serialize_user
-from ..models import LenderAccount, PilotInterest, User
+from ..models import LenderAccount, PilotInterest, User, utcnow
 from ..schemas import LoginIn, PilotIn, RegisterIn
-from ..security import create_access_token, hash_password, verify_password
+from ..security import create_access_token, hash_password, new_share_token, verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -30,7 +30,8 @@ def register(body: RegisterIn, request: Request, response: Response, db: Session
     if body.account_type == "lender" and not body.organisation_name:
         raise HTTPException(422, "Lender accounts need an organisation name.")
     user = User(email=email, password_hash=hash_password(body.password), full_name=body.full_name.strip(),
-                role=body.account_type)
+                role=body.account_type, terms_accepted_at=utcnow(), terms_version=get_settings().terms_version,
+                age_confirmed=True)
     db.add(user)
     db.flush()
     if body.account_type == "member":
@@ -75,7 +76,20 @@ pilot_router = APIRouter(tags=["pilot"])
 
 @pilot_router.post("/pilot-interest", status_code=201)
 def pilot_interest(body: PilotIn, request: Request, db: Session = Depends(get_db)):
-    db.add(PilotInterest(**body.model_dump()))
+    db.add(PilotInterest(**body.model_dump(), unsubscribe_token=new_share_token()))
     services.audit(db, None, "pilot.interest_registered", None, None, {"kind": body.kind}, client_ip(request))
     db.commit()
     return {"status": "received"}
+
+
+@pilot_router.post("/pilot-interest/unsubscribe/{token}")
+def pilot_unsubscribe(token: str, db: Session = Depends(get_db)):
+    """One-step opt-out. Every message sent to a pilot contact must carry a link to this."""
+    row = db.execute(select(PilotInterest).where(PilotInterest.unsubscribe_token == token[:64])).scalar_one_or_none()
+    if row and not row.unsubscribed_at:
+        row.unsubscribed_at = utcnow()
+        row.consent_to_contact = False
+        services.audit(db, None, "pilot.unsubscribed")
+        db.commit()
+    # The same answer for known and unknown tokens, so the link reveals nothing.
+    return {"status": "unsubscribed"}

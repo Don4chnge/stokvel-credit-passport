@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { shortHash, titleCase } from "@/lib/format";
 
 const STATUS_STYLE: Record<string, string> = {
@@ -92,10 +92,29 @@ export function Loading({ label = "Loading" }: { label?: string }) {
 }
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  const box = useRef<HTMLDivElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    const focusable = () => Array.from(box.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])') ?? []);
+    (focusable().find((el) => el.matches("input, select, textarea")) ?? focusable()[0])?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.preventDefault(); close.current(); return; }
+      if (e.key !== "Tab") return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); opener?.focus?.(); };
+  }, []);
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-deep/80 p-4 sm:items-center" role="dialog" aria-modal="true" aria-label={title}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-line bg-forest p-6 shadow-2xl">
+      <div ref={box} className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-line bg-forest p-6 shadow-2xl">
         <div className="mb-5 flex items-start justify-between gap-4">
           <h2 className="text-2xl">{title}</h2>
           <button type="button" onClick={onClose} className="text-sm text-sage hover:text-ivory" aria-label="Close">Close</button>

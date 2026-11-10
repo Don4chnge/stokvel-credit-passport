@@ -14,7 +14,11 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: 10_000 },
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : [["list"]],
-  use: { baseURL: "http://localhost:3000", trace: "retain-on-failure", screenshot: "only-on-failure" },
+  use: {
+    baseURL: "http://localhost:3000", trace: "retain-on-failure", screenshot: "only-on-failure",
+    // Journeys start with the cookie choice already made. e2e/05-compliance.spec.ts tests the banner itself.
+    storageState: { cookies: [], origins: [{ origin: "http://localhost:3000", localStorage: [{ name: "scp_cookie_choice", value: "denied" }] }] },
+  },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /responsive\.spec\.ts/ },
     { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /responsive\.spec\.ts/ },

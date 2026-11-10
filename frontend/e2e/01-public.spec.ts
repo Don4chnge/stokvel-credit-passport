@@ -10,21 +10,24 @@ test.describe("public website", () => {
     await expect(page.getByRole("link", { name: "Explore Your Passport" })).toHaveAttribute("href", "/register");
   });
 
-  test("hero skylines switch between four South African cities", async ({ page }) => {
+  test("hero skyline changes city by itself, with no city picker", async ({ page }) => {
     await page.goto("/");
     const scenes = page.getByTestId("city-scenes");
-    await expect(scenes).toHaveAttribute("data-city", "jhb");
-    for (const [name, key, text] of [["Cape Town", "cpt", "Cape Town, Western Cape."], ["Pretoria", "pta", "Pretoria, Gauteng."],
-      ["Rustenburg", "nw", "Rustenburg, North West."], ["Johannesburg", "jhb", "Johannesburg, Gauteng."]] as const) {
-      await scenes.getByRole("button", { name, exact: true }).click();
-      await expect(scenes).toHaveAttribute("data-city", key);
-      await expect(scenes.getByTestId("city-caption")).toContainText(text);
-      await expect(scenes.getByRole("button", { name, exact: true })).toHaveAttribute("aria-pressed", "true");
-    }
-    // choosing a city pauses the rotation, and the control says so
-    await expect(scenes.getByRole("button", { name: "Play the skyline animation" })).toBeVisible();
+    await expect(scenes).toHaveAttribute("data-city", "cpt");
+    await expect(scenes.getByTestId("city-caption")).toContainText("Cape Town, Western Cape");
+    // no control lets a visitor choose a city
+    for (const name of ["Cape Town", "Gqeberha", "Kimberley", "Bloemfontein", "Durban", "Rustenburg", "Polokwane", "Mbombela", "Johannesburg", "Pretoria"])
+      await expect(scenes.getByRole("button", { name })).toHaveCount(0);
+    // it moves on without any input
+    await expect(scenes).toHaveAttribute("data-city", "gq", { timeout: 12_000 });
+    await expect(scenes.getByTestId("city-caption")).toContainText("Gqeberha, Eastern Cape");
+    await expect(scenes).toHaveAttribute("data-city", "kim", { timeout: 12_000 });
+    // the pause control stops it, for people who need stillness
+    await scenes.getByRole("button", { name: "Pause the skyline animation" }).click();
+    await page.waitForTimeout(8_000);
+    await expect(scenes).toHaveAttribute("data-city", "kim");
     await scenes.getByRole("button", { name: "Play the skyline animation" }).click();
-    await expect(scenes.getByRole("button", { name: "Pause the skyline animation" })).toBeVisible();
+    await expect(scenes).toHaveAttribute("data-city", "bfn", { timeout: 12_000 });
   });
 
   test("every navigation link reaches its section", async ({ page }) => {
@@ -85,7 +88,7 @@ test.describe("public website", () => {
   test("legal page carries the review checklist and no compliance claim", async ({ page }) => {
     await page.goto("/legal");
     await expect(page.getByText("does not claim legal compliance")).toBeVisible();
-    await expect(page.locator("#regulatory ol > li")).toHaveCount(10);
+    await expect(page.getByTestId("legal-checklist").locator("li")).toHaveCount(10);
   });
 
   test("unknown verification code is reported as no match", async ({ page }) => {

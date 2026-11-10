@@ -67,7 +67,7 @@ export default function Overview() {
           <div>
             <p className="text-sm text-sage">Contribution Reliability Index</p>
             <div className="mt-2"><Explanation e={s.explanation} /></div>
-            <p className="mt-4 text-xs text-sage">Experimental measure. Not a credit bureau score. <Link href="/member/passport" className="text-lime underline-offset-4 hover:underline">See the full breakdown</Link></p>
+            <p className="mt-4 text-xs text-sage">Experimental measure. Not a credit bureau score. <Link href="/member/passport" className="text-lime underline underline-offset-4">See the full breakdown</Link></p>
           </div>
         </section>
       )}
@@ -86,7 +86,7 @@ export default function Overview() {
       {hasHistory && (
         <section className="mt-12" aria-label="Verified contributions by month">
           <h2 className="text-2xl">Verified contributions by month</h2>
-          <div className="panel mt-4 h-64 p-4">
+          <div className="panel mt-4 h-64 p-4" role="img" aria-label={`Bar chart of verified contributions for the last 12 months. ${data.series.filter((m: any) => m.amount > 0).length} months have verified contributions, total ${rand(data.total_verified)}.`}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="#2B3D36" vertical={false} />
@@ -115,7 +115,7 @@ export default function Overview() {
               ))}
             </ul>
           )}
-          <button className="mt-4 text-sm text-lime underline-offset-4 hover:underline" onClick={() => { setError(""); setModal("create"); }}>Start a new stokvel</button>
+          <button className="mt-4 text-sm text-lime underline underline-offset-4" onClick={() => { setError(""); setModal("create"); }}>Start a new stokvel</button>
         </div>
         <div>
           <h2 className="text-2xl">Recent activity</h2>

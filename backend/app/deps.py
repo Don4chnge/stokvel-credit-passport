@@ -59,6 +59,8 @@ def serialize_user(db: Session, user: User) -> dict:
         "analytics_consent": user.profile.analytics_consent if user.profile else False,
         "organisation_name": user.lender_account.organisation_name if user.lender_account else None,
         "manages_stokvels": [str(i) for i in manages],
+        "deletion_requested_at": user.deletion_requested_at.isoformat() if user.deletion_requested_at else None,
+        "terms_version": user.terms_version,
     }
 
 

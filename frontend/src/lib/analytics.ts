@@ -6,7 +6,7 @@
  */
 const KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 const HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
-const CONSENT = "scp_analytics_consent";
+const CONSENT = "scp_cookie_choice";
 
 let client: any = null;
 let loading: Promise<any> | null = null;

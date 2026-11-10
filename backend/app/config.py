@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     environment: str = "development"
     bcrypt_rounds: int = 12
+    terms_version: str = "2026-11-draft"
 
     @property
     def sqlalchemy_url(self) -> str:

@@ -28,6 +28,7 @@ const FAQ = [
   ["How does a contribution become verified?", "Two ways. A payment provider confirms the payment, or the stokvel treasurer checks it against the group account. A screenshot or a member's own entry is never enough."],
   ["What happens when a record is wrong?", "The member reports it. The treasurer reviews. A verified record is never edited. A correction or reversal is added as a new linked record, so the history stays complete."],
   ["Does the index use my age, gender or race?", "No. The index reads contribution behaviour only: dates, amounts paid, misses and recoveries. A separate audit checks whether outcomes differ between groups."],
+  ["What does it cost?", "Nothing. There are no sign-up, subscription or transaction fees, and no charge for sharing a Passport. If a fee is ever introduced, the full price is shown before you agree to anything."],
   ["Are real payments processed?", "Not in this prototype. Payments run in TEST MODE. Live PayShap Request needs an authorised payment provider account."],
   ["Is my stokvel's money held by the platform?", "No. The platform records and verifies contributions. The money stays in the stokvel's own bank account."],
 ];

@@ -100,7 +100,10 @@ test.describe("member and lender journey", () => {
   test("member shares the Passport with chosen fields and an expiry", async ({ page }) => {
     await signIn(page, DEMO.member, /\/member$/);
     await page.getByRole("link", { name: "Consent centre" }).click();
-    await page.getByLabel("Contribution history").check();
+    // nothing is pre-ticked: the member chooses each field
+    for (const name of ["Reliability index", "Index explanation", "Contribution totals", "Contribution history", "Stokvel memberships"])
+      await expect(page.getByRole("checkbox", { name: new RegExp(`^${name}`) })).not.toBeChecked();
+    for (const name of ["Reliability index", "Contribution totals", "Contribution history"]) await page.getByRole("checkbox", { name: new RegExp(`^${name}`) }).check();
     await page.getByLabel("Who is this for?").fill("Example Community Lender");
     await page.getByLabel("Access expires after").selectOption("7");
     await page.getByRole("button", { name: "Create sharing link" }).click();

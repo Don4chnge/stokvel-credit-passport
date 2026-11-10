@@ -56,7 +56,7 @@ export function PassportCard({ p, verifyUrl, animate = false, illustrative = fal
         </dl>
         {verifyUrl && (
           <div className="rounded-md bg-ivory p-2" title="Scan to check that this Passport is authentic">
-            <QRCodeSVG value={verifyUrl} size={72} bgColor="#F4F1E8" fgColor="#101B19" />
+            <QRCodeSVG value={verifyUrl} size={72} bgColor="#F4F1E8" fgColor="#101B19" title={`QR code linking to the authenticity check for Passport ${p.passport_id}`} role="img" />
           </div>
         )}
       </div>

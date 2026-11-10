@@ -25,7 +25,8 @@ function Register() {
     try {
       const res = await api<{ user: User }>("/auth/register", { method: "POST", body: {
         email: f.get("email"), password, full_name: f.get("full_name"), account_type: type,
-        organisation_name: type === "lender" ? f.get("organisation_name") : null } });
+        organisation_name: type === "lender" ? f.get("organisation_name") : null,
+        accept_terms: f.get("accept_terms") === "on", confirm_adult: f.get("confirm_adult") === "on" } });
       setUser(res.user);
       void track("user_signed_up", { account_type: type });
       router.replace(homeFor(res.user));
@@ -52,11 +53,22 @@ function Register() {
         <div><label className="label" htmlFor="email">Email</label><input id="email" name="email" type="email" required autoComplete="email" className="field" /></div>
         <div><label className="label" htmlFor="password">Password</label><input id="password" name="password" type="password" required autoComplete="new-password" className="field" aria-describedby="pw-hint" />
           <p id="pw-hint" className="mt-1.5 text-xs text-sage">At least 10 characters, with letters and numbers.</p></div>
+        <fieldset className="space-y-3 border-t border-line pt-4">
+          <legend className="sr-only">Agreements</legend>
+          <label className="flex items-start gap-3 text-sm text-sage">
+            <input type="checkbox" name="confirm_adult" required className="mt-1 h-4 w-4 flex-none accent-[#C6E66B]" />
+            <span>I am 18 or older.</span>
+          </label>
+          <label className="flex items-start gap-3 text-sm text-sage">
+            <input type="checkbox" name="accept_terms" required className="mt-1 h-4 w-4 flex-none accent-[#C6E66B]" />
+            <span>I accept the <Link href="/terms" target="_blank" className="text-lime underline underline-offset-4">terms of service</Link> and have read the <Link href="/privacy" target="_blank" className="text-lime underline underline-offset-4">privacy policy</Link>.</span>
+          </label>
+        </fieldset>
         {error && <Notice tone="error">{error}</Notice>}
         <button className="btn-primary w-full py-3" disabled={busy}>{busy ? "Creating account" : "Create account"}</button>
       </form>
-      <p className="mt-4 text-xs leading-relaxed text-sage">By creating an account you agree to the <Link href="/legal#privacy" className="underline">privacy policy</Link>. This is a prototype. Use test details only.</p>
-      <p className="mt-6 text-sm text-sage">Already registered? <Link href="/signin" className="text-lime underline-offset-4 hover:underline">Sign in</Link></p>
+      <p className="mt-4 text-xs leading-relaxed text-sage">Free to use. This is a prototype, so use test details only.</p>
+      <p className="mt-6 text-sm text-sage">Already registered? <Link href="/signin" className="text-lime underline underline-offset-4">Sign in</Link></p>
     </main>
   );
 }

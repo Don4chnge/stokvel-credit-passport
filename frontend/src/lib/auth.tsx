@@ -6,7 +6,7 @@ import { identify, resetAnalytics } from "./analytics";
 export type User = {
   id: string; email: string; full_name: string; role: "member" | "lender" | "platform_admin";
   is_synthetic: boolean; passport_id: string | null; organisation_name: string | null;
-  manages_stokvels: string[]; analytics_consent: boolean;
+  manages_stokvels: string[]; analytics_consent: boolean; deletion_requested_at: string | null;
 };
 
 type Ctx = { user: User | null; loading: boolean; refresh: () => Promise<User | null>; signOut: () => Promise<void>; setUser: (u: User | null) => void };

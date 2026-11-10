@@ -5,13 +5,13 @@ Playwright 1.63, PostgreSQL 16).
 
 | Suite | Command | Result |
 | --- | --- | --- |
-| Backend on SQLite | `cd backend && pytest -q` | 120 passed |
-| Backend on PostgreSQL 16 | `TEST_DATABASE_URL=postgresql://... pytest -q` | 120 passed |
-| Migration | `alembic upgrade head` on an empty PostgreSQL database, then seed and verify the chain | Applied. Chain valid |
+| Backend on SQLite | `cd backend && pytest -q` | 124 passed |
+| Backend on PostgreSQL 16 | `TEST_DATABASE_URL=postgresql://... pytest -q` | 124 passed |
+| Migrations | `alembic upgrade head` on PostgreSQL, downgrade to 0001 and upgrade again | Applied both ways |
 | Frontend types | `npm run lint` | No errors |
 | Frontend unit tests | `npm test` | 21 passed |
-| Frontend production build | `npm run build` | 21 routes built |
-| End to end, desktop | `npm run e2e` | 37 passed |
+| Frontend production build | `npm run build` | 25 routes built |
+| End to end, desktop | `npm run e2e` | 58 passed |
 | End to end, mobile (Pixel 7) | `npm run e2e` | 3 passed |
 
 Not run: GitHub Actions. The workflow in `.github/workflows/ci.yml` runs the same commands and has not
@@ -35,3 +35,4 @@ executed yet because the code has not been pushed to GitHub.
 | Member, treasurer, administrator, lender and platform journeys | e2e/03, e2e/04 |
 | Mobile layout, no sideways scrolling | e2e/responsive.spec.ts |
 | Analytics privacy rules | frontend/src/__tests__/analytics.test.ts |
+| The 20-point launch checklist, WCAG 2.1 AA scans, keyboard use | e2e/05-compliance.spec.ts, docs/COMPLIANCE.md |

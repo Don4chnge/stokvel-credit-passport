@@ -61,6 +61,10 @@ class User(Base, Timestamps):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_synthetic: Mapped[bool] = mapped_column(Boolean, default=False)
     deletion_requested_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    # Consent records: which terms version the person accepted, when, and their 18+ confirmation.
+    terms_accepted_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    terms_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    age_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     profile: Mapped["MemberProfile | None"] = relationship(back_populates="user", uselist=False)
     lender_account: Mapped["LenderAccount | None"] = relationship(back_populates="user", uselist=False)
@@ -71,7 +75,6 @@ class MemberProfile(Base, Timestamps):
     id: Mapped[uuid.UUID] = pk()
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     passport_id: Mapped[str] = mapped_column(String(24), unique=True, index=True)
-    phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
     analytics_consent: Mapped[bool] = mapped_column(Boolean, default=False)
     user: Mapped[User] = relationship(back_populates="profile")
 
@@ -329,4 +332,6 @@ class PilotInterest(Base):
     kind: Mapped[str] = mapped_column(String(24))  # stokvel | lender | other
     message: Mapped[str | None] = mapped_column(Text, nullable=True)
     consent_to_contact: Mapped[bool] = mapped_column(Boolean, default=False)
+    unsubscribe_token: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    unsubscribed_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)

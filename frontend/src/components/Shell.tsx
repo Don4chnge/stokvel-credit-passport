@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { BUSINESS } from "@/lib/business";
 import { homeFor, useAuth, User } from "@/lib/auth";
 import { Loading, Logo, SyntheticTag } from "./ui";
 
@@ -59,12 +60,13 @@ export function SiteFooter() {
           <li><Link href="/#pilot" className="hover:text-ivory">Pilot programme</Link></li>
           <li><a href="/api/docs" className="hover:text-ivory">API documentation</a></li></ul></div>
         <div><p className="mb-3 text-ivory">Legal and privacy</p><ul className="space-y-2">
-          <li><Link href="/legal#privacy" className="hover:text-ivory">Privacy policy</Link></li>
-          <li><Link href="/legal#consent" className="hover:text-ivory">Consent</Link></li>
-          <li><Link href="/legal#retention" className="hover:text-ivory">Data retention</Link></li>
-          <li><Link href="/legal#regulatory" className="hover:text-ivory">Regulatory status</Link></li></ul></div>
-        <div><p className="mb-3 text-ivory">Contact</p><ul className="space-y-2">
-          <li>pilot@stokvelpassport.example</li><li>Gauteng, South Africa</li></ul></div>
+          <li><Link href="/privacy" className="hover:text-ivory">Privacy policy</Link></li>
+          <li><Link href="/terms" className="hover:text-ivory">Terms of service</Link></li>
+          <li><Link href="/refunds" className="hover:text-ivory">Refund policy</Link></li>
+          <li><Link href="/cookies" className="hover:text-ivory">Cookie policy</Link></li>
+          <li><Link href="/legal" className="hover:text-ivory">Regulatory status and licences</Link></li></ul></div>
+        <div><p className="mb-3 text-ivory">Business details</p><ul className="space-y-2" data-testid="footer-business">
+          <li>{BUSINESS.operator}</li><li>{BUSINESS.registration}</li><li>{BUSINESS.address}</li><li>{BUSINESS.email}</li></ul></div>
       </div>
       <div className="border-t border-line px-5 py-5 text-center text-xs text-sage/70">
         Every figure, name and organisation shown in this prototype is synthetic. Payments run in TEST MODE.

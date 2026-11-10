@@ -31,7 +31,7 @@ export default function GroupOverview() {
         <Stat label="Ledger events, all groups" value={integrity?.event_count ?? "…"} />
       </section>
       <section className="mt-12">
-        <div className="flex items-end justify-between gap-4"><h2 className="text-2xl">Recent ledger activity</h2><Link href="/stokvel/ledger" className="text-sm text-lime underline-offset-4 hover:underline">Open the ledger</Link></div>
+        <div className="flex items-end justify-between gap-4"><h2 className="text-2xl">Recent ledger activity</h2><Link href="/stokvel/ledger" className="text-sm text-lime underline underline-offset-4">Open the ledger</Link></div>
         {events.length === 0 ? <p className="mt-4 text-sm text-sage">No verified contributions yet. Verified payments appear here as sealed records.</p> : (
           <ul className="mt-4 divide-y divide-line border-y border-line">
             {events.map((e) => (

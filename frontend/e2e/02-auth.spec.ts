@@ -16,6 +16,8 @@ test.describe("sign in, registration and access control", () => {
     await page.getByLabel("Full name").fill("Weak Password");
     await page.getByLabel("Email").fill("weak@example.co.za");
     await page.getByLabel("Password").fill("short");
+    await page.getByLabel("I am 18 or older.").check();
+    await page.getByLabel(/I accept the terms of service/).check();
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "Use at least 10 characters with letters and numbers." })).toBeVisible();
   });
@@ -25,6 +27,8 @@ test.describe("sign in, registration and access control", () => {
     await page.getByLabel("Full name").fill("Naledi Newcomer");
     await page.getByLabel("Email").fill(`naledi.${Date.now()}@example.co.za`);
     await page.getByLabel("Password").fill("Brand-New-Member-2026");
+    await page.getByLabel("I am 18 or older.").check();
+    await page.getByLabel(/I accept the terms of service/).check();
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page).toHaveURL(/\/member$/);
     await expect(page.getByTestId("empty-state")).toContainText("Your index starts with your first verified contribution");
@@ -44,6 +48,8 @@ test.describe("sign in, registration and access control", () => {
     await page.getByLabel("Full name").fill("Duplicate Person");
     await page.getByLabel("Email").fill(DEMO.member);
     await page.getByLabel("Password").fill("Another-Passw0rd-1");
+    await page.getByLabel("I am 18 or older.").check();
+    await page.getByLabel(/I accept the terms of service/).check();
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "An account with this email already exists." })).toBeVisible();
   });

@@ -56,12 +56,12 @@ export default function Sharing() {
             <div className="space-y-3">
               {SCOPES.map(([key, name, hint]) => (
                 <label key={key} className="flex items-start gap-3">
-                  <input type="checkbox" name={`scope_${key}`} defaultChecked={key === "index" || key === "totals"} className="mt-1 h-4 w-4 accent-[#C6E66B]" />
+                  <input type="checkbox" name={`scope_${key}`} className="mt-1 h-4 w-4 accent-[#C6E66B]" />
                   <span><span className="block text-sm">{name}</span><span className="block text-xs text-sage">{hint}</span></span>
                 </label>
               ))}
             </div>
-            <p className="mt-3 text-xs text-sage">Your name, Passport ID and verification status are always included.</p>
+            <p className="mt-3 text-xs text-sage">Nothing is selected for you. Your name, Passport ID and verification status are always included.</p>
           </fieldset>
           <div className="space-y-4">
             <div><label className="label" htmlFor="recipient">Who is this for?</label>

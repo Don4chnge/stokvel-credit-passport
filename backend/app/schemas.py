@@ -26,6 +26,22 @@ class RegisterIn(BaseModel):
     full_name: str = Field(min_length=2, max_length=160)
     account_type: Literal["member", "lender"] = "member"
     organisation_name: str | None = Field(default=None, max_length=160)
+    accept_terms: bool = Field(default=False, validate_default=True)
+    confirm_adult: bool = Field(default=False, validate_default=True)
+
+    @field_validator("accept_terms")
+    @classmethod
+    def terms(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("Accept the terms of service and privacy policy to create an account.")
+        return v
+
+    @field_validator("confirm_adult")
+    @classmethod
+    def adult(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError("You must be 18 or older to use this service.")
+        return v
 
     @field_validator("password")
     @classmethod

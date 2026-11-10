@@ -66,7 +66,8 @@ class Actor:
 def make_user(client):
     def _make(name="Test Member", account_type="member", email=None):
         body = {"email": email or f"{uuid.uuid4().hex[:10]}@example.test", "password": PASSWORD,
-                "full_name": name, "account_type": account_type}
+                "full_name": name, "account_type": account_type,
+                "accept_terms": True, "confirm_adult": True}
         if account_type == "lender":
             body["organisation_name"] = "Test Lender"
         r = client.post("/api/v1/auth/register", json=body)
