@@ -32,7 +32,7 @@ stokvel contribution behaviour into a portable, transparent record that the memb
 | Lender portal | Open a shared Passport, scoped view, provenance, report download, verification history |
 | Platform administration | Ledger status, checkpoints, tampering simulation, fairness report, audit log |
 | Backend | FastAPI, SQLAlchemy, PostgreSQL or SQLite, Alembic migration, 47 documented endpoints |
-| Tests | 124 backend tests, 21 frontend unit tests, 61 Playwright end-to-end tests including WCAG 2.1 AA scans, GitHub Actions CI |
+| Tests | 169 backend tests, 21 frontend unit tests, 73 Playwright end-to-end tests including security and WCAG 2.1 AA checks, GitHub Actions CI |
 
 ## Run it locally
 
@@ -75,10 +75,10 @@ The 16-step demo script is in [docs/DEMO.md](docs/DEMO.md).
 ## Run the tests
 
 ```bash
-cd backend && pytest -q                                   # 124 tests on SQLite
+cd backend && pytest -q                                   # 169 tests on SQLite
 TEST_DATABASE_URL=postgresql://... pytest -q              # the same tests on PostgreSQL
 cd frontend && npm run lint && npm test                   # types and 21 unit tests
-cd frontend && npm run build && npm run e2e               # 61 Playwright tests (starts both servers)
+cd frontend && npm run build && npm run e2e               # 73 Playwright tests (starts both servers)
 ```
 
 Results from the last full run are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md).
@@ -89,6 +89,7 @@ Results from the last full run are recorded in [docs/TEST_REPORT.md](docs/TEST_R
 - [API examples](docs/API.md)
 - [Payments and how to activate a real PayShap provider](docs/PAYMENTS.md)
 - [Contribution Reliability Index and fairness](docs/SCORING.md)
+- [Security checklist: 20 points, findings and tests](docs/SECURITY_CHECKLIST.md)
 - [Security and POPIA design notes](docs/SECURITY.md)
 - [Product analytics plan (PostHog)](docs/ANALYTICS.md)
 - [Launch checklist: 20 compliance points and their tests](docs/COMPLIANCE.md)

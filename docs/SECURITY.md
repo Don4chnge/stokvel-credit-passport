@@ -24,6 +24,8 @@ Designed with POPIA in mind. **Not legally reviewed. No compliance is claimed.**
 Member rights supported: download own data, report an incorrect record, request deletion, revoke sharing,
 withdraw analytics consent.
 
+The 20-point security audit and its tests are in [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md).
+
 Known gaps before a pilot:
 
 - Rate limiting is per process. Use a shared store with more than one instance.

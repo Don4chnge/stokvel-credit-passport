@@ -21,6 +21,7 @@ def test_password_is_hashed_with_bcrypt(client, db):
 def test_duplicate_email_is_rejected(client):
     body = {"email": "dup@example.test", "password": PASSWORD, "full_name": "Dup One", "accept_terms": True, "confirm_adult": True}
     assert client.post("/api/v1/auth/register", json=body).status_code == 201
+    client.cookies.clear()
     assert client.post("/api/v1/auth/register", json=body).status_code == 409
 
 
@@ -45,7 +46,7 @@ def test_login_sets_http_only_cookie_and_returns_token(client, make_user):
     cookie = r.headers["set-cookie"].lower()
     assert "httponly" in cookie and "samesite=lax" in cookie
     assert client.get("/api/v1/auth/me").json()["email"] == "login@example.test"  # cookie session works
-    client.post("/api/v1/auth/logout")
+    assert client.post("/api/v1/auth/logout", headers={"Origin": "http://localhost:3000"}).status_code == 204
     client.cookies.clear()
     assert client.get("/api/v1/auth/me").status_code == 401
 
@@ -77,8 +78,13 @@ def test_role_in_token_is_not_trusted(client, make_user):
     import jwt
     from app.config import get_settings
     u = make_user()
-    token = jwt.encode({"sub": u.id, "role": "platform_admin"}, get_settings().secret_key, algorithm="HS256")
+    import time
+    claims = {"sub": u.id, "role": "platform_admin", "tv": 0, "exp": int(time.time()) + 600}
+    token = jwt.encode(claims, get_settings().secret_key, algorithm="HS256")
     assert client.get("/api/v1/analytics/fairness", headers={"Authorization": f"Bearer {token}"}).status_code == 403
+    # a token with no expiry is refused outright
+    forever = jwt.encode({"sub": u.id, "role": "member", "tv": 0}, get_settings().secret_key, algorithm="HS256")
+    assert client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {forever}"}).status_code == 401
 
 
 def test_rate_limit_blocks_login_floods(client, monkeypatch):

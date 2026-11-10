@@ -56,7 +56,9 @@ test.describe("treasurer, stokvel administrator and platform administrator", () 
     const sid = (await (await page.request.get("/api/v1/auth/me")).json()).manages_stokvels[0];
     const members = await (await page.request.get(`/api/v1/stokvels/${sid}/members`)).json();
     const target = members.find((m: any) => m.role === "member" && m.status === "active");
-    expect((await page.request.delete(`/api/v1/stokvels/${sid}/members/${target.membership_id}`)).status()).toBe(403);
+    const res = await page.request.delete(`/api/v1/stokvels/${sid}/members/${target.membership_id}`, { headers: { Origin: "http://localhost:3000" } });
+    expect(res.status()).toBe(403);
+    expect((await res.json()).detail).toBe("Your role does not allow this action.");
   });
 
   test("stokvel administrator approves a join request but cannot verify payments", async ({ page }) => {

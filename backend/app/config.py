@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     bcrypt_rounds: int = 12
     terms_version: str = "2026-11-draft"
 
+    # Security
+    trusted_proxy_hops: int = 0          # proxies in front of the API that append to X-Forwarded-For
+    max_body_bytes: int = 64 * 1024      # no endpoint accepts files, so request bodies stay small
+    sensitive_rate_limit_per_minute: int = 30
+    login_max_failures: int = 5
+    login_lock_minutes: int = 15
+    allow_demo_seed: bool = False        # demo accounts use a published password, so seeding production needs an explicit yes
+
     @property
     def sqlalchemy_url(self) -> str:
         url = self.database_url

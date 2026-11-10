@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "@fontsource-variable/fraunces";
 import "@fontsource-variable/instrument-sans";
 import "@fontsource/ibm-plex-mono/400.css";
@@ -12,7 +13,9 @@ export const metadata: Metadata = {
   description: "Make years of responsible stokvel saving visible to the financial system. A member-owned record of verified contributions.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Reading the nonce renders every page per request, which the nonce-based Content Security Policy needs.
+  await headers();
   return (
     <html lang="en-ZA">
       <body>

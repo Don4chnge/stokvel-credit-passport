@@ -6,8 +6,9 @@ services:
     rootDir: backend
     plan: free
     buildCommand: pip install -r requirements.txt
-    preDeployCommand: alembic upgrade head
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    # Stops the deploy when a production setting is unsafe, then applies migrations (including the append-only ledger rule).
+    preDeployCommand: python -m app.check_production && alembic upgrade head
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-server-header
     healthCheckPath: /api/health
     envVars:
       - { key: PYTHON_VERSION, value: 3.12.7 }
@@ -15,6 +16,9 @@ services:
       - { key: COOKIE_SECURE, value: "true" }
       - { key: PAYMENT_PROVIDER, value: test }
       - { key: PAYMENT_TEST_MODE, value: "true" }
+      - { key: RATE_LIMIT_ENABLED, value: "true" }
+      # Proxies in front of the API that append to X-Forwarded-For. Confirm after the first deploy: see docs/DEPLOYMENT.md.
+      - { key: TRUSTED_PROXY_HOPS, value: "1" }
       - { key: SECRET_KEY, generateValue: true }
       - { key: DATABASE_URL, sync: false }
       - { key: FRONTEND_URL, sync: false }

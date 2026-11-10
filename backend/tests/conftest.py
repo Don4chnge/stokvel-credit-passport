@@ -20,6 +20,8 @@ PASSWORD = "Str0ng-Passw0rd!"
 
 @pytest.fixture(autouse=True)
 def clean_db():
+    from app.ratelimit import HITS
+    HITS.clear()
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     with SessionLocal() as db:

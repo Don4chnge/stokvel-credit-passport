@@ -12,6 +12,7 @@ from decimal import Decimal
 from sqlalchemy import select
 
 from . import ledger, services
+from .config import get_settings
 from .db import Base, SessionLocal, engine
 from .models import (
     Contribution, ContributionSchedule, LenderAccount, MemberDemographics, MemberProfile, PaymentRequest,
@@ -283,6 +284,10 @@ def main():
     parser = argparse.ArgumentParser(description="Seed synthetic demonstration data.")
     parser.add_argument("--reset", action="store_true", help="Drop every table first.")
     args = parser.parse_args()
+    settings = get_settings()
+    if settings.environment == "production" and not settings.allow_demo_seed:
+        raise SystemExit("Refusing to seed production: demo accounts use a published password. "
+                         "Set ALLOW_DEMO_SEED=true only for a public demonstration with synthetic data.")
     if args.reset:
         Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

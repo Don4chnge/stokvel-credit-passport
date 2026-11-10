@@ -11,9 +11,7 @@ from .security import decode_access_token
 from .services import MANAGE_ROLES
 
 
-def client_ip(request: Request) -> str:
-    fwd = request.headers.get("x-forwarded-for")
-    return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else "unknown")
+from .net import client_ip  # noqa: E402,F401  (re-exported for routers)
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
@@ -29,8 +27,8 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         user = db.get(User, uuid.UUID(payload["sub"]))
     except (ValueError, KeyError):
         user = None
-    if not user or not user.is_active:
-        raise HTTPException(401, "Sign in to continue.")
+    if not user or not user.is_active or payload.get("tv", 0) != user.token_version:
+        raise HTTPException(401, "Sign in to continue.")  # signed out, locked or deactivated
     return user
 
 

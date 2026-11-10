@@ -65,6 +65,8 @@ class User(Base, Timestamps):
     terms_accepted_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
     terms_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
     age_confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Raised on sign-out and on a lock. Tokens carrying an older value stop working.
+    token_version: Mapped[int] = mapped_column(Integer, default=0)
 
     profile: Mapped["MemberProfile | None"] = relationship(back_populates="user", uselist=False)
     lender_account: Mapped["LenderAccount | None"] = relationship(back_populates="user", uselist=False)
@@ -335,3 +337,13 @@ class PilotInterest(Base):
     unsubscribe_token: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     unsubscribed_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+class LoginThrottle(Base):
+    """Failed sign-in counter per email, whether or not an account exists, so a lock reveals nothing."""
+
+    __tablename__ = "login_throttle"
+    email_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    failures: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, onupdate=utcnow)

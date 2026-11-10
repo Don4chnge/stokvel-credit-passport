@@ -5,17 +5,20 @@ Playwright 1.63, PostgreSQL 16).
 
 | Suite | Command | Result |
 | --- | --- | --- |
-| Backend on SQLite | `cd backend && pytest -q` | 124 passed |
-| Backend on PostgreSQL 16 | `TEST_DATABASE_URL=postgresql://... pytest -q` | 124 passed |
+| Backend on SQLite | `cd backend && pytest -q` | 169 passed |
+| Backend on PostgreSQL 16 | `TEST_DATABASE_URL=postgresql://... pytest -q` | 169 passed |
 | Migrations | `alembic upgrade head` on PostgreSQL, downgrade to 0001 and upgrade again | Applied both ways |
 | Frontend types | `npm run lint` | No errors |
 | Frontend unit tests | `npm test` | 21 passed |
 | Frontend production build | `npm run build` | 25 routes built |
-| End to end, desktop | `npm run e2e` | 58 passed |
+| End to end, desktop | `npm run e2e` | 70 passed |
+| Ledger database rule | UPDATE, DELETE and TRUNCATE on `ledger_events` after migration 0003, PostgreSQL 16 | All three rejected |
+| Dependency advisories | `npm audit`, `pip-audit -r requirements.txt` | No known vulnerabilities |
+| Security checklist, 20 points | `backend/tests/test_hardening.py`, `e2e/06-security.spec.ts`, see SECURITY_CHECKLIST.md | Included in the counts above |
 | End to end, mobile (Pixel 7) | `npm run e2e` | 3 passed |
 
-Not run: GitHub Actions. The workflow in `.github/workflows/ci.yml` runs the same commands and has not
-executed yet because the code has not been pushed to GitHub.
+GitHub Actions runs the same commands on every push, plus a secret scan of the full git history and
+dependency advisory checks. See `.github/workflows/ci.yml`.
 
 ## Coverage map
 

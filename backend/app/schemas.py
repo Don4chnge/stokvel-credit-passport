@@ -16,6 +16,21 @@ def _email(v: str) -> str:
     return v.lower()
 
 
+_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def _clean(v: str | None) -> str | None:
+    """Free text is stored as plain text. Markup and control characters are refused, never rewritten."""
+    if v is None:
+        return v
+    if _CONTROL.search(v) or "<" in v or ">" in v:
+        raise ValueError("Use plain text without angle brackets or control characters.")
+    return v.strip()
+
+
+Text = Annotated[str, AfterValidator(_clean)]
+OptText = Annotated[str | None, AfterValidator(_clean)]
+
 # Syntax check only. Reserved demo domains such as .example stay usable. Deliverability is not checked.
 EmailStr = Annotated[str, AfterValidator(_email)]
 
@@ -23,9 +38,9 @@ EmailStr = Annotated[str, AfterValidator(_email)]
 class RegisterIn(BaseModel):
     email: EmailStr
     password: str = Field(min_length=10, max_length=128)
-    full_name: str = Field(min_length=2, max_length=160)
+    full_name: Text = Field(min_length=2, max_length=160)
     account_type: Literal["member", "lender"] = "member"
-    organisation_name: str | None = Field(default=None, max_length=160)
+    organisation_name: OptText = Field(default=None, max_length=160)
     accept_terms: bool = Field(default=False, validate_default=True)
     confirm_adult: bool = Field(default=False, validate_default=True)
 
@@ -57,8 +72,8 @@ class LoginIn(BaseModel):
 
 
 class StokvelIn(BaseModel):
-    name: str = Field(min_length=3, max_length=160)
-    description: str | None = Field(default=None, max_length=600)
+    name: Text = Field(min_length=3, max_length=160)
+    description: OptText = Field(default=None, max_length=600)
     purpose: Literal["savings", "groceries", "burial", "investment", "property"] = "savings"
     frequency: Literal["weekly", "monthly"] = "monthly"
     contribution_amount: Decimal = Field(gt=0, le=Decimal("100000"), decimal_places=2)
@@ -84,11 +99,11 @@ class ContributionIn(BaseModel):
 
 
 class NoteIn(BaseModel):
-    note: str | None = Field(default=None, max_length=500)
+    note: OptText = Field(default=None, max_length=500)
 
 
 class DisputeIn(BaseModel):
-    note: str = Field(min_length=5, max_length=500)
+    note: Text = Field(min_length=5, max_length=500)
 
 
 class SimulateIn(BaseModel):
@@ -98,7 +113,7 @@ class SimulateIn(BaseModel):
 class ShareIn(BaseModel):
     scopes: list[str] = Field(min_length=1, max_length=5)
     expires_in_days: int = Field(default=7, ge=1, le=90)
-    recipient_label: str = Field(min_length=2, max_length=160)
+    recipient_label: Text = Field(min_length=2, max_length=160)
 
 
 class TamperIn(BaseModel):
@@ -111,11 +126,11 @@ class ConsentIn(BaseModel):
 
 
 class PilotIn(BaseModel):
-    contact_name: str = Field(min_length=2, max_length=160)
+    contact_name: Text = Field(min_length=2, max_length=160)
     email: EmailStr
-    organisation: str = Field(min_length=2, max_length=160)
+    organisation: Text = Field(min_length=2, max_length=160)
     kind: Literal["stokvel", "lender", "other"]
-    message: str | None = Field(default=None, max_length=1000)
+    message: OptText = Field(default=None, max_length=1000)
     consent_to_contact: bool
 
     @field_validator("consent_to_contact")

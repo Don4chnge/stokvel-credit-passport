@@ -45,6 +45,19 @@ first-party.
 - Run the ledger integrity verification.
 - Confirm `/api/health` reports `TEST MODE`.
 
+## Security settings to finish after the first deploy
+
+1. **Proxy hops.** Rate limits need the visitor's real address. Sign in once on the live site, then open the
+   audit log as the platform administrator and look at the address recorded for `user.login`. If every
+   visitor shows the same address, raise `TRUSTED_PROXY_HOPS` by one and redeploy. If the address looks
+   like one a visitor could invent, lower it.
+2. **Least-privilege database role.** Run `docs/sql/app_role.sql` in the Neon SQL editor, then point
+   `DATABASE_URL` on Render at the `scp_app` role. Keep the owner role for migrations only.
+3. **Spending limits.** Stay on the free plans with no card on file where the host allows it. Where a card
+   is required, set a billing alert or a hard limit on Neon, Render, Netlify or Vercel, and PostHog.
+4. **Demo accounts.** `python -m app.seed` refuses to run with `ENVIRONMENT=production` unless
+   `ALLOW_DEMO_SEED=true`. Use it only for a public demo that holds synthetic data.
+
 ## Production notes
 
 - `ENVIRONMENT=production` stops the app creating tables on start. Alembic owns the schema.

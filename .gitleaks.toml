@@ -1,0 +1,11 @@
+# Secret scanning rules. The default rule set applies everywhere.
+# The paths below hold fixed test values only: idempotency keys and throwaway signing keys used by test runs.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Test fixtures with fixed, non-secret values"
+paths = [
+  '''backend/tests/.*\.py''',
+  '''frontend/playwright\.config\.ts''',
+]
