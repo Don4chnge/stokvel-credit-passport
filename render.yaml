@@ -6,9 +6,8 @@ services:
     rootDir: backend
     plan: free
     buildCommand: pip install -r requirements.txt
-    # Stops the deploy when a production setting is unsafe, then applies migrations (including the append-only ledger rule).
-    preDeployCommand: python -m app.check_production && alembic upgrade head
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-server-header
+    # Checks production settings, applies migrations, loads synthetic demo data once, then starts the API.
+    startCommand: sh start.sh
     healthCheckPath: /api/health
     envVars:
       - { key: PYTHON_VERSION, value: 3.12.7 }
@@ -19,6 +18,8 @@ services:
       - { key: RATE_LIMIT_ENABLED, value: "true" }
       # Proxies in front of the API that append to X-Forwarded-For. Confirm after the first deploy: see docs/DEPLOYMENT.md.
       - { key: TRUSTED_PROXY_HOPS, value: "1" }
+      # Public demo with synthetic data only. Remove before any real data is stored.
+      - { key: ALLOW_DEMO_SEED, value: "true" }
       - { key: SECRET_KEY, generateValue: true }
       - { key: DATABASE_URL, sync: false }
       - { key: FRONTEND_URL, sync: false }
