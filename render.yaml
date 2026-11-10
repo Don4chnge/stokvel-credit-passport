@@ -5,6 +5,8 @@ services:
     runtime: python
     rootDir: backend
     plan: free
+    # Same city as the Neon database. A distant region makes every query slow.
+    region: frankfurt
     buildCommand: pip install -r requirements.txt
     # Checks production settings, applies migrations, loads synthetic demo data once, then starts the API.
     startCommand: sh start.sh
