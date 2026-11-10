@@ -178,6 +178,6 @@ test.describe("member and lender journey", () => {
     await expect(result).toContainText("Authentic");
     await expect(result).toContainText("N.D.");
     await expect(result).not.toContainText("Nomvula");
-    await expect(result).not.toContainText("R ");
+    await expect(result).not.toContainText(/R \d/); // no rand amounts
   });
 });

@@ -11,7 +11,7 @@ Playwright 1.63, PostgreSQL 16).
 | Frontend types | `npm run lint` | No errors |
 | Frontend unit tests | `npm test` | 21 passed |
 | Frontend production build | `npm run build` | 21 routes built |
-| End to end, desktop | `npm run e2e` | 36 passed |
+| End to end, desktop | `npm run e2e` | 37 passed |
 | End to end, mobile (Pixel 7) | `npm run e2e` | 3 passed |
 
 Not run: GitHub Actions. The workflow in `.github/workflows/ci.yml` runs the same commands and has not

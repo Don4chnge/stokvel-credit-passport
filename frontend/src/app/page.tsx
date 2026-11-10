@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteFooter, SiteNav } from "@/components/Shell";
 import { PassportCard } from "@/components/PassportCard";
+import { CityScenes } from "@/components/CityScenes";
 import { LedgerDemo } from "@/components/LedgerDemo";
 import { PilotForm } from "@/components/PilotForm";
 import { ContributionRing, RingLegend } from "@/components/ContributionRing";
@@ -50,20 +51,30 @@ export default function Home() {
     <>
       <SiteNav />
       <main id="main">
-        {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div className="seat-field pointer-events-none absolute inset-0" aria-hidden />
-          <div className="relative mx-auto grid max-w-page items-center gap-12 px-5 py-16 lg:grid-cols-[1.05fr_1fr] lg:py-24">
-            <div>
-              <h1 className="text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">Your contributions. Your financial identity.</h1>
-              <p className="mt-6 max-w-xl text-xl leading-relaxed text-sage">Make years of responsible stokvel saving visible to the financial system.</p>
+        {/* Hero: animated South African skylines */}
+        <section className="relative isolate flex min-h-[640px] flex-col justify-center overflow-hidden lg:min-h-[calc(100vh-4.6rem)]" aria-label="Introduction">
+          <CityScenes />
+          <div className="pointer-events-none relative z-10 mx-auto w-full max-w-page px-5 pb-[19rem] pt-14 lg:pb-28 lg:pt-12">
+            <div className="pointer-events-auto max-w-3xl">
+              <h1 className="text-4xl leading-[1.05] sm:text-5xl">Your contributions.<br className="hidden sm:block" /> Your financial identity.</h1>
+              <p className="mt-6 max-w-xl text-xl leading-relaxed text-ivory/80">Make years of responsible stokvel saving visible to the financial system.</p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link href="/register" className="btn-primary px-5 py-3">Explore Your Passport</Link>
-                <Link href="/#for-lenders" className="btn-quiet px-5 py-3">For Financial Institutions</Link>
+                <Link href="/#for-lenders" className="btn-quiet bg-forest/60 px-5 py-3 backdrop-blur">For Financial Institutions</Link>
               </div>
               <p className="mt-8 max-w-md border-l border-copper pl-4 font-serif text-lg italic text-ivory/90">
                 Years of responsible stokvel saving should count for something.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="sample-passport" className="border-t border-line">
+          <div className="mx-auto grid max-w-page items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1.05fr] lg:py-24">
+            <div>
+              <h2 className="text-3xl sm:text-4xl">From Soweto to Sea Point, the saving is real. Now the record is too.</h2>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-sage">Each verified contribution is sealed on a ledger and added to a Passport the member owns. The ring shows one seat per contribution period, like the circle a stokvel sits in.</p>
+              <div className="mt-6"><RingLegend /></div>
             </div>
             <div>
               <PassportCard p={SAMPLE} animate illustrative />

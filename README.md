@@ -26,13 +26,13 @@ stokvel contribution behaviour into a portable, transparent record that the memb
 
 | Area | Contents |
 | --- | --- |
-| Public website | Hero, problem, five-step journey, sample Passport, live in-browser hash-chain demo, consent, lender section, FAQ, pilot registration, legal pages |
+| Public website | Animated hero with drawn skylines of Johannesburg, Cape Town, Pretoria and Rustenburg, problem, five-step journey, sample Passport, live in-browser hash-chain demo, consent, lender section, FAQ, pilot registration, legal pages |
 | Member portal | Overview with the contribution ring, contributions (pay, record, report a problem), Passport and PDF, consent centre, account and privacy |
 | Stokvel management | Group overview, review queue, contribution calendar and reconciliation, members and roles, ledger with integrity check and tampering simulation |
 | Lender portal | Open a shared Passport, scoped view, provenance, report download, verification history |
 | Platform administration | Ledger status, checkpoints, tampering simulation, fairness report, audit log |
 | Backend | FastAPI, SQLAlchemy, PostgreSQL or SQLite, Alembic migration, 47 documented endpoints |
-| Tests | 120 backend tests, 21 frontend unit tests, 39 Playwright end-to-end tests, GitHub Actions CI |
+| Tests | 120 backend tests, 21 frontend unit tests, 40 Playwright end-to-end tests, GitHub Actions CI |
 
 ## Run it locally
 
@@ -78,7 +78,7 @@ The 16-step demo script is in [docs/DEMO.md](docs/DEMO.md).
 cd backend && pytest -q                                   # 120 tests on SQLite
 TEST_DATABASE_URL=postgresql://... pytest -q              # the same tests on PostgreSQL
 cd frontend && npm run lint && npm test                   # types and 21 unit tests
-cd frontend && npm run build && npm run e2e               # 39 Playwright tests (starts both servers)
+cd frontend && npm run build && npm run e2e               # 40 Playwright tests (starts both servers)
 ```
 
 Results from the last full run are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md).

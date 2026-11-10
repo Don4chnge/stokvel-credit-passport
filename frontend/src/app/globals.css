@@ -41,7 +41,37 @@ h1, h2, h3 { font-family: "Fraunces Variable", Georgia, serif; font-weight: 400;
   .td { @apply px-4 py-3 text-sm; }
 }
 
+/* ---------- animated skylines ---------- */
+.city-scenes .win { animation: twinkle 8s ease-in-out infinite; }
+.city-scenes .star { animation: star 5s ease-in-out infinite; }
+.city-scenes .beacon { animation: beacon 2.4s steps(1) infinite; }
+.city-scenes .drift-far { animation: drift-a 46s ease-in-out infinite alternate; }
+.city-scenes .drift-mid { animation: drift-b 38s ease-in-out infinite alternate; }
+.city-scenes .drift-near { animation: drift-c 30s ease-in-out infinite alternate; }
+.city-scenes .drive-r { animation: drive-r 22s linear infinite; }
+.city-scenes .drive-l { animation: drive-l 26s linear infinite; }
+.city-scenes .wheel { transform-box: fill-box; transform-origin: center; animation: spin 80s linear infinite; }
+.city-scenes .wheel.fast { animation-duration: 7s; }
+.city-scenes .cloth { animation: cloth 24s ease-in-out infinite alternate; }
+.city-scenes .ripple { animation: ripple 5s ease-in-out infinite; }
+.city-scenes .petal { animation: petal 12s linear infinite; }
+.city-scenes.is-paused * { animation-play-state: paused !important; }
+
+@keyframes twinkle { 0%, 42%, 58%, 100% { fill-opacity: 1; stroke-opacity: 0.5; } 50% { fill-opacity: 0.08; stroke-opacity: 0.1; } }
+@keyframes star { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.7; } }
+@keyframes beacon { 0%, 100% { opacity: 1; } 55% { opacity: 0.15; } }
+@keyframes drift-a { from { transform: translateX(-10px); } to { transform: translateX(10px); } }
+@keyframes drift-b { from { transform: translateX(14px); } to { transform: translateX(-14px); } }
+@keyframes drift-c { from { transform: translateX(-20px); } to { transform: translateX(20px); } }
+@keyframes drive-r { from { transform: translateX(-80px); } to { transform: translateX(1680px); } }
+@keyframes drive-l { from { transform: translateX(1680px); } to { transform: translateX(-80px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes cloth { from { transform: translate(-46px, 0); } to { transform: translate(60px, 5px); } }
+@keyframes ripple { 0%, 100% { opacity: 0.12; transform: translateX(0); } 50% { opacity: 0.45; transform: translateX(14px); } }
+@keyframes petal { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 0.8; } 100% { transform: translate(-70px, 690px); opacity: 0.5; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .city-scenes * { animation: none !important; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

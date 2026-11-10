@@ -10,6 +10,23 @@ test.describe("public website", () => {
     await expect(page.getByRole("link", { name: "Explore Your Passport" })).toHaveAttribute("href", "/register");
   });
 
+  test("hero skylines switch between four South African cities", async ({ page }) => {
+    await page.goto("/");
+    const scenes = page.getByTestId("city-scenes");
+    await expect(scenes).toHaveAttribute("data-city", "jhb");
+    for (const [name, key, text] of [["Cape Town", "cpt", "Cape Town, Western Cape."], ["Pretoria", "pta", "Pretoria, Gauteng."],
+      ["Rustenburg", "nw", "Rustenburg, North West."], ["Johannesburg", "jhb", "Johannesburg, Gauteng."]] as const) {
+      await scenes.getByRole("button", { name, exact: true }).click();
+      await expect(scenes).toHaveAttribute("data-city", key);
+      await expect(scenes.getByTestId("city-caption")).toContainText(text);
+      await expect(scenes.getByRole("button", { name, exact: true })).toHaveAttribute("aria-pressed", "true");
+    }
+    // choosing a city pauses the rotation, and the control says so
+    await expect(scenes.getByRole("button", { name: "Play the skyline animation" })).toBeVisible();
+    await scenes.getByRole("button", { name: "Play the skyline animation" }).click();
+    await expect(scenes.getByRole("button", { name: "Pause the skyline animation" })).toBeVisible();
+  });
+
   test("every navigation link reaches its section", async ({ page }) => {
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main" });
