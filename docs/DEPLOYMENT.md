@@ -1,6 +1,7 @@
 # Deployment
 
-Nothing is deployed yet. These steps prepare a hosted demo on Neon, Render and Netlify or Vercel.
+A demo with synthetic data runs at https://stokvel-credit-passport.netlify.app (website on Netlify, API on
+Render in Frankfurt, database on Neon in Frankfurt). These steps rebuild the same setup.
 
 ## 1. Database: Neon
 

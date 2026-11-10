@@ -2,6 +2,11 @@
 
 **Your contributions. Your financial identity.**
 
+**Live demo:** https://stokvel-credit-passport.netlify.app
+
+Sign in as a demo member with `member@demo.stokvelpassport.example` and the password `Passport-Demo-2026`.
+The first request can take up to a minute while the free API host wakes up.
+
 A working prototype of a financial identity platform for South African stokvel members. It turns verified
 stokvel contribution behaviour into a portable, transparent record that the member owns and controls.
 
@@ -103,6 +108,6 @@ Results from the last full run are recorded in [docs/TEST_REPORT.md](docs/TEST_R
 | --- | --- | --- |
 | Live PayShap Request | TEST MODE only | A merchant account and API credentials from an authorised provider such as Stitch or Ozow. See docs/PAYMENTS.md |
 | PostHog analytics | Built, switched off | `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` |
-| Hosted deployment | Configured, not deployed | Neon, Render and Netlify or Vercel accounts. See docs/DEPLOYMENT.md |
+| Hosted deployment | Live demo with synthetic data | Database on Neon, API on Render, website on Netlify. See docs/DEPLOYMENT.md |
 | Real pilot data | None | One or two stokvels that agree to a pilot, after legal review |
 | Legal position | Not reviewed | docs/LEGAL_REVIEW_CHECKLIST.md |
