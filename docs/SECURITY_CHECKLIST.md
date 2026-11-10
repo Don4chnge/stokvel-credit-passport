@@ -27,8 +27,8 @@ What the audit found, what changed, and the test that proves each point. Backend
 | 20 | Check production settings | No gate | Startup gate (point 2). The demo seed, which uses a published password, is refused in production unless explicitly allowed | `test_20_*` |
 
 Dependencies: `npm audit` and `pip-audit` report no known vulnerabilities as of 10 November 2026. One
-advisory in the CSS build tool bundled with Next.js was closed with a version override. Dependabot opens
-weekly update pull requests.
+advisory in the CSS build tool bundled with Next.js was closed with a version override. CI repeats both
+checks on every push and fails when a high-severity advisory appears.
 
 ## Still open
 
