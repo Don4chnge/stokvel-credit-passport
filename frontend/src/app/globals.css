@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body {
+  background: #101B19;
+  color: #F4F1E8;
+  font-family: "Instrument Sans Variable", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: #C6E66B; color: #101B19; }
+
+h1, h2, h3 { font-family: "Fraunces Variable", Georgia, serif; font-weight: 400; letter-spacing: -0.015em;
+  font-variation-settings: "SOFT" 50, "WONK" 0; }
+
+:focus-visible { outline: 2px solid #C6E66B; outline-offset: 3px; border-radius: 3px; }
+
+/* Seat ring: the stokvel circle, used as a quiet background detail */
+.seat-field {
+  background-image: radial-gradient(circle at center, rgba(168,184,174,0.16) 1px, transparent 1.6px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at 70% 30%, #000 0%, transparent 68%);
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors
+         disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-lime text-forest hover:bg-[#d4ee8a]; }
+  .btn-quiet { @apply btn border border-line text-ivory hover:border-sage hover:bg-pine; }
+  .btn-danger { @apply btn border border-copper/60 text-copper hover:bg-copper/10; }
+  .panel { @apply relative min-w-0 rounded-lg border border-line bg-pine/60; }
+  .field { @apply w-full rounded-md border border-line bg-deep px-3 py-2.5 text-sm text-ivory placeholder:text-sage/50
+           focus:border-lime focus:outline-none; }
+  .label { @apply mb-1.5 block text-sm text-sage; }
+  .hash { @apply whitespace-nowrap font-mono text-xs text-sage; }
+  .th { @apply px-4 py-3 text-left text-xs font-medium text-sage; }
+  .td { @apply px-4 py-3 text-sm; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

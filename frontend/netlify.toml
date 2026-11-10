@@ -1,0 +1,10 @@
+# Netlify build for the Next.js frontend. Set BACKEND_URL (and the optional PostHog keys) in Site settings.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

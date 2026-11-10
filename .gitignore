@@ -1,0 +1,16 @@
+# secrets
+.env
+.env.local
+*.pem
+# python
+__pycache__/
+.venv/
+*.db
+.pytest_cache/
+# node
+node_modules/
+.next/
+next-env.d.ts
+tsconfig.tsbuildinfo
+test-results/
+playwright-report/

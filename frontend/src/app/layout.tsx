@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import "@fontsource-variable/fraunces";
+import "@fontsource-variable/instrument-sans";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "./globals.css";
+import { AuthProvider } from "@/lib/auth";
+import { AnalyticsConsent } from "@/components/AnalyticsConsent";
+
+export const metadata: Metadata = {
+  title: { default: "Stokvel Credit Passport", template: "%s · Stokvel Credit Passport" },
+  description: "Make years of responsible stokvel saving visible to the financial system. A member-owned record of verified contributions.",
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en-ZA">
+      <body>
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-lime focus:px-3 focus:py-2 focus:text-forest">Skip to content</a>
+        <AuthProvider>{children}<AnalyticsConsent /></AuthProvider>
+      </body>
+    </html>
+  );
+}
