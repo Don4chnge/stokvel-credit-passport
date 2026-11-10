@@ -1,11 +1,32 @@
+<div align="center">
+
 # Stokvel Credit Passport
 
 **Your contributions. Your financial identity.**
 
-**Live demo:** https://stokvel-credit-passport.netlify.app
+<a href="https://stokvel-credit-passport.netlify.app"><img alt="Live demo: stokvel-credit-passport.netlify.app" src="https://img.shields.io/badge/LIVE-STOKVEL--CREDIT--PASSPORT.NETLIFY.APP-C6E66B?style=for-the-badge&labelColor=101B19"></a>
+<a href="docs/DEMO.md"><img alt="Demo guide" src="https://img.shields.io/badge/DEMO%20GUIDE-WALKTHROUGH-B78A62?style=for-the-badge&labelColor=101B19"></a>
 
-Sign in as a demo member with `member@demo.stokvelpassport.example` and the password `Passport-Demo-2026`.
-The first request can take up to a minute while the free API host wakes up.
+<a href="https://github.com/Don4chnge/stokvel-credit-passport/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/Don4chnge/stokvel-credit-passport/actions/workflows/ci.yml/badge.svg"></a>
+<img alt="Hosted on Netlify, Render and Neon" src="https://img.shields.io/badge/hosted%20on-Netlify%20%2B%20Render%20%2B%20Neon-1C2B26">
+<img alt="263 automated tests" src="https://img.shields.io/badge/tests-263%20automated-1C2B26">
+<img alt="Security checklist 20 of 20" src="https://img.shields.io/badge/security%20checklist-20%20of%2020-1C2B26">
+<img alt="Payments in test mode" src="https://img.shields.io/badge/payments-TEST%20MODE-B78A62">
+<img alt="Demo data is 100 percent synthetic" src="https://img.shields.io/badge/demo%20data-100%25%20synthetic-B78A62">
+
+Designed and built by **Thabang Manyama**
+
+<a href="https://stokvel-credit-passport.netlify.app"><img alt="Home page: the headline over an animated Cape Town skyline" src="docs/images/hero.jpg" width="100%"></a>
+
+</div>
+
+Sign in to the [live demo](https://stokvel-credit-passport.netlify.app) as a member with
+`member@demo.stokvelpassport.example` and the password `Passport-Demo-2026`. The first request can take up
+to a minute while the free API host wakes up.
+
+| Member overview | Ledger integrity |
+| --- | --- |
+| <img alt="Member overview with a reliability index of 77 out of 100 and a plain explanation" src="docs/images/member.jpg"> | <img alt="Platform ledger with 2160 events, a verified hash chain and a tampering simulation" src="docs/images/ledger.jpg"> |
 
 A working prototype of a financial identity platform for South African stokvel members. It turns verified
 stokvel contribution behaviour into a portable, transparent record that the member owns and controls.
